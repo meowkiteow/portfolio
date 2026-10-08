@@ -197,6 +197,10 @@ function getPostForRoute(pathname) {
     }
   }
 
+  if (clean === 'ui' || clean === '_ui') {
+    return getPostForRoute('/');
+  }
+
   const cleanNoPrefix = clean.replace(/^_(work|journal|services)_/, '').replace(/^_/, '');
   const candidates = [
     path.join(ROOT_DIR, 'api', 'posts', clean + '.html'),
@@ -317,11 +321,10 @@ const MIME_TYPES = {
 // Determine cache policy by file path
 function getCacheControl(filePath) {
   const ext = path.extname(filePath).toLowerCase();
-  const base = path.basename(filePath);
 
-  // Fingerprinted static assets in /assets/ (e.g. index-451442ce.js, index-c1064074.css, fonts)
-  if (/[-.][a-f0-9]{8,}\.(js|css|woff2|woff|ttf|png|svg)$/i.test(base)) {
-    return 'public, max-age=31536000, immutable';
+  // Always force fresh revalidation for JS and CSS during active development
+  if (['.js', '.css', '.html'].includes(ext)) {
+    return 'no-cache, no-store, must-revalidate';
   }
 
   // Videos, audio, Rive animations, images, and fonts
@@ -329,13 +332,8 @@ function getCacheControl(filePath) {
     return 'public, max-age=86400, stale-while-revalidate=604800';
   }
 
-  // Stylesheets and javascript
-  if (['.js', '.css'].includes(ext)) {
-    return 'public, max-age=86400';
-  }
-
   // Dynamic endpoints and HTML
-  return 'no-cache';
+  return 'no-cache, no-store, must-revalidate';
 }
 
 const memoryGzipCache = new Map();
@@ -345,11 +343,12 @@ function serveGzipped(filePath, contentType, req, res) {
   const supportsGzip = acceptEncoding.includes('gzip');
   try {
     const cacheControl = getCacheControl(filePath);
+    const stat = fs.statSync(filePath);
     let cached = memoryGzipCache.get(filePath);
-    if (!cached) {
+    if (!cached || cached.mtime !== stat.mtimeMs) {
       const content = fs.readFileSync(filePath);
       const compressed = zlib.gzipSync(content);
-      cached = { content, compressed };
+      cached = { content, compressed, mtime: stat.mtimeMs };
       memoryGzipCache.set(filePath, cached);
     }
 
@@ -625,6 +624,9 @@ const server = http.createServer((req, res) => {
   // 4. API: /api/posts/:slug
   if (pathname.startsWith('/api/posts/')) {
     const slug = pathname.replace('/api/posts/', '').replace(/\/+$/, '');
+    if (slug === '_ui' || slug === 'ui') {
+      return sendJson(res, { data: getPostForRoute('/') });
+    }
     const post = getPostForRoute(slug);
     if (!post) {
       return sendJson(res, {
