@@ -1,0 +1,1 @@
+import{b as n}from"./_baseRandom-7bfb07b8.js";import{ad as s,ae as t}from"./index-451442ce.js";function e(a){var r=a.length;return r?a[n(0,r-1)]:void 0}function u(a){return e(s(a))}function o(a){var r=t(a)?e:u;return r(a)}export{o as s};

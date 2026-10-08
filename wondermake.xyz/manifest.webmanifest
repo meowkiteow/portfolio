@@ -1,0 +1,35 @@
+{
+  "name": "Vellisto",
+  "description": "An ultra-premium video editing agency and motion design studio crafting high-retention YouTube content, viral short form, and electrifying animations.",
+  "short_name": "Vellisto",
+  "theme_color": "#ffffff",
+  "background_color": "#0F0F0F",
+  "display": "standalone",
+  "start_url": ".",
+  "icons": [
+    {
+      "src": "https://wondermake.xyz/thumbs/wm-favicon-80308_favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://wondermake.xyz/thumbs/wm-favicon-80308_favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://wondermake.xyz/thumbs/wm-pwa-40858_favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "https://wondermake.xyz/thumbs/wm-pwa-40858_favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

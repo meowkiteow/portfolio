@@ -1,0 +1,60 @@
+@layer components {
+  .part-related_reload { order: -1; }
+  @media (max-width: 1023.9px) {
+    .part-related_reload { grid-column: span 2 / span 2; }
+  }
+  .part-related .--grid-span-4,
+  .part-related .part-related_single {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+  }
+  .part-project_yt-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.15);
+    transition: background 0.3s ease;
+  }
+  .part-project_yt-preview:hover {
+    background: rgba(0, 0, 0, 0.35);
+  }
+  .part-project_yt-badge {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: #ff0000;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.45rem 1rem;
+    border-radius: 4px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .part-project_yt-preview:hover .part-project_yt-badge {
+    transform: scale(1.05);
+    background: #cc0000;
+  }
+  .part-project_yt-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    z-index: 20;
+    background: #000;
+  }
+}

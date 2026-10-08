@@ -1,0 +1,21 @@
+@layer templates {
+  .template-project_heading { padding-bottom: 0.05em; line-height: 0.9em; }
+  .template-project:has(video[src*="black-coffee"]) .template-project_media,
+  .template-project.--reel .template-project_media {
+    aspect-ratio: 9/16 !important;
+    max-height: 74vh !important;
+    width: auto !important;
+    max-width: calc(74vh * 9 / 16) !important;
+    margin: 0 auto !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+  }
+  .template-project:has(video[src*="black-coffee"]) .template-project_media video,
+  .template-project.--reel .template-project_media video {
+    aspect-ratio: 9/16 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 14px !important;
+  }
+}

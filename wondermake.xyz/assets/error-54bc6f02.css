@@ -1,0 +1,40 @@
+body:has(.template-error) .part-header,
+body:has(.template-error) .part-fab,
+body:has(.template-error) .part-grid,
+body:has(.template-error) .part-toolbar,
+body:has(.template-error) .part-footer {
+  display: none !important;
+}
+
+.template-error {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  z-index: 9999;
+  margin: 0;
+  padding: 0;
+}
+
+.template-error_box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 36px;
+}
+
+.template-error_box h1 {
+  margin: 0;
+  line-height: 1;
+}
+
+.template-error_action {
+  margin: 0;
+}

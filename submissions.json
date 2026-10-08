@@ -1,0 +1,352 @@
+[
+  {
+    "id": "lead_1728281427723_01",
+    "timestamp": "2026-10-07T06:10:27.723Z",
+    "action": "enquiry-form",
+    "data": {
+      "name": "Krishna (Test Lead)",
+      "email": "krishna.test@example.com",
+      "company": "Studio Wonder",
+      "project": [
+        "Branding",
+        "Website Design",
+        "Product Design"
+      ],
+      "budget": "£10k - £25k",
+      "timeline": "Q4 2026",
+      "message": "Hi! We would love to collaborate on a new brand identity and interactive web experience.",
+      "origin": "Homepage Enquiry Form"
+    }
+  },
+  {
+    "id": "lead_1728281470097_02",
+    "timestamp": "2026-10-07T06:11:10.097Z",
+    "action": "general-form",
+    "data": {
+      "name": "Sarah Jenkins",
+      "email": "sarah.jenkins@designlab.co",
+      "message": "Hello team, wanted to ask about design support retainers.",
+      "origin": "Contact Page (General)"
+    }
+  },
+  {
+    "id": "lead_1728281900115_03",
+    "timestamp": "2026-10-07T06:18:20.115Z",
+    "action": "enquiry-form",
+    "data": {
+      "project": [
+        "Product Design"
+      ],
+      "name": "krishna",
+      "company": "none",
+      "email": "krishnarawatshri@gmail.com",
+      "timeline": "none",
+      "budget": "none",
+      "message": "none",
+      "privacy": true,
+      "origin": "Home Page"
+    }
+  },
+  {
+    "id": "lead_1728283972804_04",
+    "timestamp": "2026-10-07T06:52:52.804Z",
+    "action": "general-form",
+    "data": {
+      "name": "krishna",
+      "email": "krishnarwatshri@ggmail.com",
+      "message": "asd",
+      "privacy": true
+    }
+  },
+  {
+    "id": "lead_1791362081758_j0mq",
+    "timestamp": "2026-10-07T08:34:41.755Z",
+    "action": "general-form",
+    "data": {
+      "name": "Alex Rivera",
+      "email": "alex.rivera@creativeflow.io",
+      "message": "Hey Vellisto team, loved your latest case study! We want to discuss redesigning our platform.",
+      "origin": "Contact Page"
+    }
+  },
+  {
+    "id": "lead_1791362237486_rh1n",
+    "timestamp": "2026-10-07T08:37:17.486Z",
+    "action": "enquiry-form",
+    "data": {
+      "project": [
+        "Branding"
+      ],
+      "name": "krishna",
+      "company": "vellisto",
+      "email": "krishnarawatshri@gmail.com",
+      "timeline": "18 august",
+      "budget": "100kk",
+      "message": "meowkiteow",
+      "privacy": true,
+      "origin": "Contact Page"
+    },
+    "replied": true,
+    "repliedAt": "2026-10-07T08:39:02.915Z",
+    "repliedBy": "meowkiteow",
+    "replySubject": "Re: Project Inquiry — Vellisto",
+    "replySnippet": "Hi krishna,\n\nThank you for reaching out to Vellisto!"
+  },
+  {
+    "id": "lead_1791362511118_6pns",
+    "timestamp": "2026-10-07T08:41:51.118Z",
+    "action": "general-form",
+    "data": {
+      "name": "as",
+      "email": "krishnarawatshri@gmail.com",
+      "message": "sad",
+      "privacy": true
+    },
+    "replied": true,
+    "repliedAt": "2026-10-07T08:42:49.768Z",
+    "repliedBy": "meowkiteow",
+    "replySubject": "Re: Project Inquiry — Vellisto",
+    "replySnippet": "okay sir i think i feel like you goddamn stupid and you need braincells to think and every single thing possible on this earth to fucking ahhahahahahaasdsaadasdadasdasdadadasdadahahkhhkdaaaaaaaaaaaaaa"
+  },
+  {
+    "id": "lead_1791363974408_wusn",
+    "timestamp": "2026-10-07T09:06:14.408Z",
+    "action": "enquiry-form",
+    "data": {
+      "project": [
+        "Branding"
+      ],
+      "name": "s",
+      "company": "as",
+      "email": "sta011.krishna.c10@gmail.com",
+      "timeline": "10 august",
+      "budget": "10k ",
+      "message": "niggest",
+      "privacy": true,
+      "origin": "Contact Page"
+    }
+  },
+  {
+    "id": "lead_1791364074236_5u5j",
+    "timestamp": "2026-10-07T09:07:54.236Z",
+    "action": "general-form",
+    "data": {
+      "name": "krishna",
+      "email": "krishnarawatshri@gmail.com",
+      "message": "sda",
+      "privacy": true
+    }
+  },
+  {
+    "id": "lead_1791366601868_1gug",
+    "timestamp": "2026-10-07T09:50:01.864Z",
+    "action": "enquiry-form",
+    "data": {
+      "name": "Elena Rostova",
+      "email": "krishnarawatshri@gmail.com",
+      "company": "Rostova Media",
+      "project": [
+        "YouTube Shorts Retainer"
+      ],
+      "budget": "£1.5k / mo",
+      "timeline": "Immediate",
+      "message": "Looking for a dedicated agency to edit 12 retention-focused Shorts per month.",
+      "origin": "Contact Page"
+    }
+  },
+  {
+    "id": "lead_1791370488626_pn3g",
+    "timestamp": "2026-10-07T10:54:48.626Z",
+    "action": "inbound-email",
+    "data": {
+      "name": "Sarah Connor",
+      "email": "sarah@skynet-escape.io",
+      "message": "Hi Vellisto team, we are filming a 3-part mini documentary series and need an experienced post-production partner.",
+      "origin": "Direct Email (hello@vellisto.com)"
+    }
+  },
+  {
+    "id": "lead_1791391243006_im9b",
+    "timestamp": "2026-10-07T16:40:43.006Z",
+    "action": "inbound-email",
+    "data": {
+      "name": "Test Client",
+      "email": "testclient@sample.com",
+      "message": "Hey Vellisto team,\n\nWe saw your recent showcase reels and would love to collaborate on our upcoming product launch motion design.\n\nLooking forward to hearing from you!\n- Alex",
+      "origin": "Direct Email (hello@vellisto.com)"
+    }
+  },
+  {
+    "id": "lead_1791391815860_7sju",
+    "timestamp": "2026-10-07T16:50:15.860Z",
+    "action": "enquiry-form",
+    "data": {
+      "project": [
+        "Branding"
+      ],
+      "name": "s",
+      "company": "krishnarawatshri@gmail.com",
+      "email": "krishnarawatshri@gmail.com",
+      "timeline": "s",
+      "budget": "s",
+      "message": "s",
+      "privacy": true,
+      "origin": "Contact Page"
+    }
+  },
+  {
+    "id": "lead_1791399925517_imnt",
+    "timestamp": "2026-10-07T19:05:25.517Z",
+    "action": "enquiry-form",
+    "data": {
+      "project": [
+        "Long Form",
+        "Motion Designs",
+        "Short Form"
+      ],
+      "name": "krishna",
+      "company": "krishna",
+      "email": "krishnarawatshri@gmail.com",
+      "timeline": "18 august",
+      "budget": "1k",
+      "message": "asd",
+      "privacy": true,
+      "origin": "Contact Page"
+    }
+  },
+  {
+    "id": "lead_1791421405158_00vo",
+    "timestamp": "2026-10-08T01:03:25.158Z",
+    "action": "enquiry-form",
+    "data": {
+      "project": [
+        "Branding",
+        "Website Development",
+        "Design Support"
+      ],
+      "name": "krishna",
+      "company": "krishna",
+      "email": "sta011.krishna.c10@gmail.com",
+      "timeline": "10 august",
+      "budget": "10k",
+      "message": "i am interested in getting my video edited by you",
+      "privacy": true,
+      "origin": "Contact Page"
+    }
+  },
+  {
+    "id": "lead_1791426315284_6833",
+    "timestamp": "2026-10-08T02:25:15.284Z",
+    "action": "enquiry-form",
+    "data": {
+      "project": [
+        "Branding",
+        "Website Development",
+        "Website Design"
+      ],
+      "name": "testing",
+      "company": "testing",
+      "email": "krishnarawatshri@gmail.com",
+      "timeline": "18 august",
+      "budget": "1k",
+      "message": "this is a testing email for you muse\n\nsend me the pricing details",
+      "privacy": true,
+      "origin": "Contact Page"
+    }
+  },
+  {
+    "id": "lead_1791426981669_czmg",
+    "timestamp": "2026-10-08T02:36:21.670Z",
+    "action": "inbound-email",
+    "data": {
+      "name": "krishnarawatkriss@gmail.com",
+      "email": "krishnarawatkriss@gmail.com",
+      "message": "testing email for muse AI\n\ni want to know your prices\n",
+      "origin": "Direct Email (hello@vellisto.com)"
+    }
+  },
+  {
+    "id": "lead_1791427141749_foej",
+    "timestamp": "2026-10-08T02:39:01.749Z",
+    "action": "inbound-email",
+    "data": {
+      "name": "krishnarawatkriss@gmail.com",
+      "email": "krishnarawatkriss@gmail.com",
+      "message": "this is a test email for muse ai\n\ni want to know your prices pls send it to me\n",
+      "origin": "Direct Email (hello@vellisto.com)"
+    }
+  },
+  {
+    "id": "lead_1791428008348_0fkc",
+    "timestamp": "2026-10-08T02:53:28.348Z",
+    "action": "enquiry-form",
+    "data": {
+      "project": [
+        "Design Support",
+        "Website Development",
+        "Branding"
+      ],
+      "name": "test",
+      "company": "test",
+      "email": "krishnarawatshri@gmail.com",
+      "timeline": "august 10",
+      "budget": "1k",
+      "message": "tell me your prices",
+      "privacy": true,
+      "origin": "Contact Page"
+    }
+  },
+  {
+    "id": "lead_1791428462627_n8qp",
+    "timestamp": "2026-10-08T03:01:02.627Z",
+    "action": "inbound-email",
+    "data": {
+      "name": "usa41117@gmail.com",
+      "email": "usa41117@gmail.com",
+      "message": "i want to know your prices\n",
+      "origin": "Direct Email (hello@vellisto.com)"
+    }
+  },
+  {
+    "id": "lead_1791428687207_gqss",
+    "timestamp": "2026-10-08T03:04:47.207Z",
+    "action": "inbound-email",
+    "data": {
+      "name": "zeusisgreat492@gmail.com",
+      "email": "zeusisgreat492@gmail.com",
+      "message": "i want to know prices for long form edits\n",
+      "origin": "Direct Email (hello@vellisto.com)"
+    }
+  },
+  {
+    "id": "lead_1791428988764_zxjk",
+    "timestamp": "2026-10-08T03:09:48.764Z",
+    "action": "enquiry-form",
+    "data": {
+      "project": [
+        "Branding",
+        "Website Development",
+        "Website Design"
+      ],
+      "name": "krishna",
+      "company": null,
+      "email": "krishnarawatshri@gmail.com",
+      "timeline": "18",
+      "budget": "1k",
+      "message": "how many videos can you edit for 1k? short form ",
+      "privacy": true,
+      "origin": "Contact Page"
+    }
+  },
+  {
+    "id": "lead_1791434022764_b8cc",
+    "timestamp": "2026-10-08T04:33:42.765Z",
+    "action": "inbound-email",
+    "data": {
+      "name": "liyahenser@gmail.com",
+      "email": "liyahenser@gmail.com",
+      "message": "HiHi, I’m looking for a project\n",
+      "origin": "Direct Email (hello@vellisto.com)"
+    }
+  }
+]

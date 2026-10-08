@@ -1,0 +1,44 @@
+{
+  "main": [
+    {
+      "link": {
+        "text": "About",
+        "path": "/about",
+        "id": false,
+        "external": false,
+        "post_type": false
+      },
+      "locked": false,
+      "class": "",
+      "children": []
+    }
+  ],
+  "footer": [
+    {
+      "link": {
+        "text": "About",
+        "path": "/about",
+        "id": false,
+        "external": false,
+        "post_type": false
+      },
+      "locked": false,
+      "class": "",
+      "children": []
+    }
+  ],
+  "sitemap": [
+    {
+      "link": {
+        "text": "About us",
+        "path": "/about",
+        "id": "214566646_663235f6acc66",
+        "external": false,
+        "post_type": "page"
+      },
+      "locked": false,
+      "class": "",
+      "children": []
+    }
+  ]
+}

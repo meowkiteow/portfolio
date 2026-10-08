@@ -1,0 +1,6 @@
+@layer components {
+  .ui-tooltip_content { min-width: fit-content; max-width: var(--radix-tooltip-content-available-width); max-height: var(--radix-tooltip-content-available-height); }
+  .ui-tooltip_title { max-width: 25rem; padding-left: var(--space-2xs-xs); padding-right: var(--space-2xs-xs); padding-top: var(--space-2xs-xs); }
+  .ui-tooltip_description { max-width: 25rem; padding-left: var(--space-2xs-xs); padding-right: var(--space-2xs-xs); padding-bottom: var(--space-2xs-xs); }
+  .ui-tooltip_arrow { --un-translate-x: -50%; transform: translate(var(--un-translate-x)) translateY(var(--un-translate-y)) translateZ(var(--un-translate-z)) rotate(var(--un-rotate)) rotateX(var(--un-rotate-x)) rotateY(var(--un-rotate-y)) rotate(var(--un-rotate-z)) skew(var(--un-skew-x)) skewY(var(--un-skew-y)) scaleX(var(--un-scale-x)) scaleY(var(--un-scale-y)) scaleZ(var(--un-scale-z)); }
+}

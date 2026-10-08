@@ -1,0 +1,156 @@
+@layer components{.part-project_route{display:block;width:100%}.part-project .--aspect-square{aspect-ratio:1/1}.part-project .--aspect-landscape{aspect-ratio:1280/720}.part-project .--aspect-reel{aspect-ratio:9/16!important;max-height:min(66vh,540px);width:auto;max-width:calc(min(66vh,540px)*9/16);margin:0 auto}.part-project .--aspect-reel video{aspect-ratio:9/16!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:12px}.part-project:has(video[src*="black-coffee"]) .part-project_route,.part-project.--reel .part-project_route{max-width:calc(min(66vh,540px)*9/16);margin:0 auto}.part-project:has(video[src*="black-coffee"]) .--motion-inset-media,.part-project.--reel .--motion-inset-media{aspect-ratio:9/16!important;max-height:min(66vh,540px);border-radius:12px;overflow:hidden}.part-project:has(video[src*="black-coffee"]) video,.part-project.--reel video{aspect-ratio:9/16!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:12px}.part-project:has(video[src*="black-coffee"]) .part-project_content,.part-project.--reel .part-project_content{max-width:calc(min(66vh,540px)*9/16);margin:0 auto}.part-project video{z-index:0;object-fit:cover;background-color:#0f0f0f}.part-project .--ui-media{transform:translate3d(var(--un-translate-x),var(--un-translate-y),var(--un-translate-z)) rotate(var(--un-rotate)) rotateX(var(--un-rotate-x)) rotateY(var(--un-rotate-y)) rotate(var(--un-rotate-z)) skew(var(--un-skew-x)) skewY(var(--un-skew-y)) scaleX(var(--un-scale-x)) scaleY(var(--un-scale-y)) scaleZ(var(--un-scale-z));transition-property:transform;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s;transition-duration:.4s;transition-timing-function:cubic-bezier(.19,1,.22,1)}.part-project:active .--ui-media{--un-scale-x:.97;--un-scale-y:.97;transform:translate(var(--un-translate-x)) translateY(var(--un-translate-y)) translateZ(var(--un-translate-z)) rotate(var(--un-rotate)) rotateX(var(--un-rotate-x)) rotateY(var(--un-rotate-y)) rotate(var(--un-rotate-z)) skew(var(--un-skew-x)) skewY(var(--un-skew-y)) scaleX(var(--un-scale-x)) scaleY(var(--un-scale-y)) scaleZ(var(--un-scale-z))}.part-project.--motion-projects{position:relative;width:100%}.part-project.--motion-projects-enter-active{z-index:2;transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s;transition-duration:.42s}.part-project.--motion-projects-enter-active .--ui-media{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s;transition-duration:.4s;transition-delay:20ms;transition-timing-function:cubic-bezier(.19,1,.22,1)}.part-project.--motion-projects-enter-active .--motion-inset-media{background-color:transparent}@media only screen and (hover: hover) and (pointer: fine){.part-project.--motion-projects-enter-active:hover .--motion-inset-media,.part-project.--motion-projects-enter-active:focus-visible .--motion-inset-media{--un-bg-opacity:1;background-color:rgba(15,15,15,var(--un-bg-opacity))}}.part-project.--motion-projects-leave-active{position:absolute;transition-delay:.5s}.part-project.--motion-projects-enter-from .--ui-media,.part-project.--motion-projects-leave-to .part-project_content{opacity:0}.part-project_yt-preview{position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(0,0,0,0.15);transition:background .3s ease}.part-project_yt-preview:hover{background:rgba(0,0,0,0.35)}.part-project_yt-badge{position:absolute;bottom:1.5rem;right:1.5rem;background:#ff0000;color:#fff;font-size:.8rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:.45rem 1rem;border-radius:4px;box-shadow:0 4px 14px rgba(0,0,0,.4);display:flex;align-items:center;gap:.4rem;transition:transform .2s ease,background .2s ease}.part-project_yt-preview:hover .part-project_yt-badge{transform:scale(1.05);background:#cc0000}.part-project_yt-iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;z-index:20;background:#000}}
+
+.part-project.--reel,.part-project:has(video[src*="black-coffee"]){max-width:320px!important;margin:0 auto!important}.part-project.--reel .part-project_route,.part-project:has(video[src*="black-coffee"]) .part-project_route{max-width:320px!important;aspect-ratio:9/16!important;max-height:568px!important;margin:0 auto!important;border-radius:16px!important;overflow:hidden!important;box-shadow:0 16px 40px rgba(0,0,0,.4)!important}.part-project.--reel .--motion-inset-media,.part-project:has(video[src*="black-coffee"]) .--motion-inset-media{aspect-ratio:9/16!important;width:100%!important;height:100%!important;max-height:568px!important;border-radius:16px!important;overflow:hidden!important}.part-project.--reel .--ui-media,.part-project.--reel .ui-video,.part-project:has(video[src*="black-coffee"]) .--ui-media,.part-project:has(video[src*="black-coffee"]) .ui-video{aspect-ratio:9/16!important;width:100%!important;height:100%!important;max-height:568px!important}.part-project.--reel video,.part-project:has(video[src*="black-coffee"]) video{aspect-ratio:9/16!important;width:100%!important;height:100%!important;max-height:568px!important;object-fit:cover!important;border-radius:16px!important}.part-project.--reel .part-project_content,.part-project:has(video[src*="black-coffee"]) .part-project_content{max-width:320px!important;margin:.8rem auto 0!important}.part-project.--reel .part-project_cats,.part-project:has(video[src*="black-coffee"]) .part-project_cats{justify-content:center!important}
+
+
+
+
+
+
+
+
+/* ================================================================
+   RESPONSIVE WORK PREVIEW & REEL SIZING (Desktop & Mobile)
+   ================================================================ */
+
+/* --- 1. DESKTOP SCREENS (min-width: 768px): Side-by-Side Grid --- */
+@media (min-width: 768px) {
+  /* Hide inline mobile preview on desktop */
+  .template-work_mobile-preview {
+    display: none !important;
+  }
+
+  /* Show standard right-side preview column */
+  .template-work_preview {
+    display: block !important;
+    position: sticky !important;
+    top: var(--space-l-xl) !important;
+  }
+
+  /* When viewing Short Form / Reels on Desktop */
+  .template-work_preview:has(.--reel),
+  .template-work_preview:has(video[src*="black-coffee"]) {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .template-work_preview article:has(.--reel),
+  .template-work_preview article:has(video[src*="black-coffee"]),
+  article.--motion-projects:has(.--reel) {
+    width: 100% !important;
+    max-width: 270px !important;
+    margin: 0 !important;
+  }
+
+  .template-work_preview .part-project_route.--reel,
+  .template-work_preview .part-project_route:has(video[src*="black-coffee"]),
+  a.part-project_route.--reel {
+    width: 270px !important;
+    max-width: 270px !important;
+    height: 480px !important;
+    max-height: 480px !important;
+    aspect-ratio: 9 / 16 !important;
+    margin: 0 !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    position: relative !important;
+    display: block !important;
+  }
+
+  .template-work_preview:has(.--reel) video,
+  .template-work_preview:has(video[src*="black-coffee"]) video,
+  .part-project_route.--reel video {
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: 9 / 16 !important;
+    object-fit: cover !important;
+    border-radius: 14px !important;
+  }
+
+  .template-work_preview article:has(.--reel) .part-project_content,
+  .template-work_preview:has(video[src*="black-coffee"]) .part-project_content {
+    width: 100% !important;
+    max-width: 270px !important;
+    margin: 0.65rem 0 0 0 !important;
+  }
+}
+
+/* --- 2. MOBILE SCREENS (max-width: 767px): Inline Below Text Box --- */
+@media (max-width: 767px) {
+  /* Hide the duplicate preview at the very bottom */
+  .template-work_grid > div.--grid-span-2:has(.template-work_preview),
+  .template-work_preview {
+    display: none !important;
+  }
+
+  /* Show the preview directly below the active project's button/text box */
+  .template-work_mobile-preview {
+    display: block !important;
+    width: 100% !important;
+    margin: 0.65rem 0 1.25rem 0 !important;
+    padding: 0 0.25rem !important;
+  }
+
+  .template-work_mobile-preview article {
+    width: 100% !important;
+  }
+
+  /* Short Form Reels (9:16 Aspect Ratio) on Mobile */
+  .template-work_mobile-preview .part-project_route.--reel,
+  .template-work_mobile-preview .part-project_route:has(video[src*="black-coffee"]) {
+    width: 100% !important;
+    max-width: 250px !important;
+    height: 444px !important;
+    max-height: 444px !important;
+    aspect-ratio: 9 / 16 !important;
+    margin: 0.5rem auto !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    display: block !important;
+  }
+
+  .template-work_mobile-preview:has(.--reel) video,
+  .template-work_mobile-preview:has(video[src*="black-coffee"]) video {
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: 9 / 16 !important;
+    object-fit: cover !important;
+    border-radius: 14px !important;
+  }
+
+  .template-work_mobile-preview:has(.--reel) .part-project_content,
+  .template-work_mobile-preview:has(video[src*="black-coffee"]) .part-project_content {
+    max-width: 250px !important;
+    margin: 0.5rem auto 0 !important;
+    text-align: center !important;
+  }
+
+  /* Long Form & Motion (16:9 Landscape Ratio) on Mobile */
+  .template-work_mobile-preview .part-project_route:not(.--reel):not(:has(video[src*="black-coffee"])) {
+    width: 100% !important;
+    aspect-ratio: 16 / 9 !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    display: block !important;
+  }
+
+  .template-work_mobile-preview .part-project_route:not(.--reel) video,
+  .template-work_mobile-preview .part-project_route:not(.--reel) iframe,
+  .template-work_mobile-preview .part-project_route:not(.--reel) .ui-video {
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: 16 / 9 !important;
+    object-fit: cover !important;
+  }
+
+  .template-work_mobile-preview .part-project_content {
+    width: 100% !important;
+    margin-top: 0.5rem !important;
+  }
+}
