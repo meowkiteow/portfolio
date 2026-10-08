@@ -601,6 +601,12 @@ const server = http.createServer((req, res) => {
     return res.end();
   }
 
+  // Redirect disconnected /ui route to /
+  if (pathname === '/ui' || pathname === '/ui/') {
+    res.writeHead(301, { 'Location': '/' });
+    return res.end();
+  }
+
   // 1. API: /api/menus
   if (pathname === '/api/menus' && req.method === 'GET') {
     return sendJson(res, { data: ssrData.menus || {} });
