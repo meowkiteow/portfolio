@@ -45,7 +45,7 @@ try {
       if (ssrData.options) {
         ssrData.options.site_title = 'Vellisto';
         ssrData.options.pwa_name = 'Vellisto';
-        ssrData.options.footer_copy = 'All work © Vellisto 2025-2026. All rights reserved. <a href="/privacy">Privacy Policy</a> | <a href="/hosting">Hosting Terms</a> | <a href="/terms">Terms of Business</a>';
+        ssrData.options.footer_copy = 'All work © Vellisto 2025-2026. All rights reserved. <a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms of Business</a>';
         ssrData.options.footer_company = 'Vellisto, Mumbai, India';
       }
       if (ssrData.menus) {
@@ -592,6 +592,12 @@ const server = http.createServer((req, res) => {
   // Fathom analytics beacons - respond with 204 No Content
   if (parsedUrl.query && (parsedUrl.query.cid || parsedUrl.query.sid)) {
     res.writeHead(204, { 'Access-Control-Allow-Origin': '*' });
+    return res.end();
+  }
+
+  // Redirect legacy /hosting route to /terms
+  if (pathname === '/hosting' || pathname === '/hosting/') {
+    res.writeHead(301, { 'Location': '/terms' });
     return res.end();
   }
 

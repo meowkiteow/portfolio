@@ -20,3 +20,6 @@
   .template-ui_motion-dot-enter-active { transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter; transition-duration: 2.4s; transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
   .template-ui_motion-dot-enter-from { --un-scale-x: 5000%; --un-scale-y: 5000%; transform: translate(var(--un-translate-x)) translateY(var(--un-translate-y)) translateZ(var(--un-translate-z)) rotate(var(--un-rotate)) rotateX(var(--un-rotate-x)) rotateY(var(--un-rotate-y)) rotate(var(--un-rotate-z)) skew(var(--un-skew-x)) skewY(var(--un-skew-y)) scaleX(var(--un-scale-x)) scaleY(var(--un-scale-y)) scaleZ(var(--un-scale-z)); opacity: 0; }
 }
+
+/* Remove Palette Section */
+a[href="#palette"], #palette, .template-ui_color, :has(> a[href="#palette"]) { display: none !important; }
