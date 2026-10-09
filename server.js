@@ -264,12 +264,32 @@ function serveSpaHtml(pathname, res) {
       post: finalPost
     };
 
+    let curIndexHtml = indexHtml;
+    try {
+      const curRaw = fs.readFileSync(path.join(ROOT_DIR, 'index.html'), 'utf8');
+      curIndexHtml = curRaw.replace(/https:\/\/wondermake\.xyz\//g, '/');
+      if (!curIndexHtml.includes('<base href="/">')) {
+        curIndexHtml = curIndexHtml.replace('<head>', '<head><base href="/">');
+      }
+    } catch (e) {}
+
+    let curPrefix = prefixHtml;
+    let curSuffix = suffixHtml;
+    const curStart = curIndexHtml.indexOf('window.$ssr = ');
+    let curEnd = curIndexHtml.lastIndexOf("';</script>");
+    if (curEnd === -1) curEnd = curIndexHtml.lastIndexOf('";</script>');
+    if (curStart !== -1 && curEnd !== -1) {
+      curPrefix = curIndexHtml.substring(0, curStart);
+      const sEnd = curIndexHtml.indexOf('</script>', curEnd);
+      curSuffix = curIndexHtml.substring(sEnd);
+    }
+
     let html;
-    if (prefixHtml && suffixHtml) {
+    if (curPrefix && curSuffix) {
       const ssrString = JSON.stringify(JSON.stringify(routeSsr));
-      html = prefixHtml + 'window.$ssr = ' + ssrString + ';' + suffixHtml;
+      html = curPrefix + 'window.$ssr = ' + ssrString + ';' + curSuffix;
     } else {
-      html = indexHtml;
+      html = curIndexHtml;
     }
 
     const siteTitle = ssrData.options?.site_title || 'Vellisto';

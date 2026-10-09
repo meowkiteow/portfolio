@@ -76,33 +76,66 @@
   }
 }
 
-/* --- 2. MOBILE SCREENS (max-width: 767px): Inline Below Text Box --- */
-@media (max-width: 767px) {
-  /* Hide the duplicate preview at the very bottom */
+/* --- 2. MOBILE SCREENS (max-width: 768px): Inline Below Text Box --- */
+@media (max-width: 768px) {
+  /* Mobile Single Column Grid & Project Stacking */
+  .template-work_grid {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .template-work_projects {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    grid-column: 1 / -1 !important;
+  }
+
+  .template-work_project {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .template-work_project > a,
+  .template-work_project .ui-button {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+  }
+
+  /* Hide the right-side preview column from desktop */
   .template-work_grid > div.--grid-span-2:has(.template-work_preview),
+  .template-work_grid > div:last-child,
   .template-work_preview {
     display: none !important;
   }
 
-  /* Show the preview directly below the active project's button/text box */
+  /* Show the active preview directly below the button */
   .template-work_mobile-preview {
     display: block !important;
     width: 100% !important;
-    margin: 0.65rem 0 1.25rem 0 !important;
-    padding: 0 0.25rem !important;
+    max-width: 100% !important;
+    margin: 0.75rem 0 1.25rem 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .template-work_mobile-preview article {
     width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
   }
 
   /* Short Form Reels (9:16 Aspect Ratio) on Mobile */
   .template-work_mobile-preview .part-project_route.--reel,
   .template-work_mobile-preview .part-project_route:has(video[src*="black-coffee"]) {
     width: 100% !important;
-    max-width: 250px !important;
-    height: 444px !important;
-    max-height: 444px !important;
+    max-width: 260px !important;
+    height: 462px !important;
+    max-height: 462px !important;
     aspect-ratio: 9 / 16 !important;
     margin: 0.5rem auto !important;
     border-radius: 14px !important;
@@ -121,16 +154,10 @@
     border-radius: 14px !important;
   }
 
-  .template-work_mobile-preview:has(.--reel) .part-project_content,
-  .template-work_mobile-preview:has(video[src*="black-coffee"]) .part-project_content {
-    max-width: 250px !important;
-    margin: 0.5rem auto 0 !important;
-    text-align: center !important;
-  }
-
   /* Long Form & Motion (16:9 Landscape Ratio) on Mobile */
   .template-work_mobile-preview .part-project_route:not(.--reel):not(:has(video[src*="black-coffee"])) {
     width: 100% !important;
+    max-width: 100% !important;
     aspect-ratio: 16 / 9 !important;
     border-radius: 10px !important;
     overflow: hidden !important;
@@ -148,7 +175,6 @@
   }
 
   .template-work_mobile-preview .part-project_content {
-    width: 100% !important;
-    margin-top: 0.5rem !important;
+    display: none !important;
   }
 }
