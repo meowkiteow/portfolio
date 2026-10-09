@@ -888,6 +888,28 @@ const server = http.createServer((req, res) => {
     }
   }
 
+  // Fallback for thumbnails requested under /thumbs/
+  if (pathname.startsWith('/thumbs/') && !fs.existsSync(localFilePath)) {
+    const fileName = path.basename(pathname);
+    // If WebP is requested, check if matching .jpg exists
+    if (fileName.endsWith('.webp')) {
+      const jpgCandidate = path.join(ROOT_DIR, 'thumbs', fileName.replace(/_jpg\.webp$/, '.jpg').replace(/\.webp$/, '.jpg'));
+      if (fs.existsSync(jpgCandidate)) {
+        localFilePath = jpgCandidate;
+      }
+    }
+    // If still not found, check base image in /uploads/
+    if (!fs.existsSync(localFilePath)) {
+      const baseName = fileName.split('_')[0];
+      const uploadJpg = path.join(ROOT_DIR, 'uploads', baseName + '.jpg');
+      const uploadPng = path.join(ROOT_DIR, 'uploads', baseName + '.png');
+      const uploadWebp = path.join(ROOT_DIR, 'uploads', baseName + '.webp');
+      if (fs.existsSync(uploadJpg)) localFilePath = uploadJpg;
+      else if (fs.existsSync(uploadPng)) localFilePath = uploadPng;
+      else if (fs.existsSync(uploadWebp)) localFilePath = uploadWebp;
+    }
+  }
+
   if (fs.existsSync(localFilePath) && fs.statSync(localFilePath).isFile()) {
     const ext = path.extname(localFilePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
