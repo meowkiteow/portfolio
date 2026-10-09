@@ -4,7 +4,18 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const zlib = require('zlib');
-const { initDiscordCRM, sendLeadViaBot, handleInboundEmail } = require('./discord-crm');
+const { 
+  initDiscordCRM, 
+  sendLeadViaBot, 
+  handleInboundEmail, 
+  sendEmailReply, 
+  getSubmissions, 
+  updateSubmission, 
+  findSubmission, 
+  getClients, 
+  saveClient, 
+  findClient 
+} = require('./discord-crm');
 
 const PORT = process.env.PORT || 3001;
 const ROOT_DIR = path.join(__dirname, 'wondermake.xyz');
@@ -479,6 +490,19 @@ function sendJson(res, data, status = 200) {
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || '';
 const SUBMISSIONS_FILE = path.join(__dirname, 'submissions.json');
 
+// Server-Sent Events (SSE) Client Registry
+const sseClients = new Set();
+function broadcastSSE(type, data) {
+  const payload = `data: ${JSON.stringify({ type, ...data })}\n\n`;
+  for (const client of sseClients) {
+    try {
+      client.write(payload);
+    } catch (_) {
+      sseClients.delete(client);
+    }
+  }
+}
+
 async function handleLeadSubmission(action, data) {
   const timestamp = new Date().toISOString();
   const id = `lead_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
@@ -502,6 +526,9 @@ async function handleLeadSubmission(action, data) {
     existing.push(entry);
     fs.writeFileSync(SUBMISSIONS_FILE, JSON.stringify(existing, null, 2), 'utf8');
     console.log(`[LEAD SAVED] Saved submission ${id} to submissions.json (${data.name || data.email || 'Anonymous'})`);
+    
+    // Broadcast real-time SSE event to live Deal Desk inbox
+    broadcastSSE('NEW_LEAD', { lead: entry });
   } catch (err) {
     console.error('[LEAD SAVE ERROR] Failed to write local submission backup:', err.message);
   }
@@ -676,6 +703,125 @@ const server = http.createServer((req, res) => {
   // Dedicated maintenance route
   if (pathname === '/maintenance' || pathname === '/maintenance/') {
     return serveMaintenanceHtml(res, 200);
+  }
+
+  // -------------------------------------------------------------
+  // Dedicated Deal Desk & Unified Inquiries Inbox Application
+  // -------------------------------------------------------------
+  const adminInboxHtmlPath = path.join(__dirname, 'admin-inbox.html');
+
+  if (pathname === '/admin' || pathname === '/admin/' || pathname === '/admin/inbox' || pathname === '/admin/inbox/' || pathname === '/inbox' || pathname === '/inbox/') {
+    try {
+      if (fs.existsSync(adminInboxHtmlPath)) {
+        const content = fs.readFileSync(adminInboxHtmlPath, 'utf8');
+        res.writeHead(200, {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'X-Content-Type-Options': 'nosniff'
+        });
+        return res.end(content);
+      }
+    } catch (e) {
+      console.error('Failed to load admin-inbox.html:', e.message);
+    }
+  }
+
+  // SSE Stream: GET /api/admin/inbox/stream
+  if (pathname === '/api/admin/inbox/stream' && req.method === 'GET') {
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*'
+    });
+    res.write('data: {"status":"connected"}\n\n');
+    sseClients.add(res);
+    req.on('close', () => { sseClients.delete(res); });
+    return;
+  }
+
+  // API: GET /api/admin/inbox
+  if (pathname === '/api/admin/inbox' && req.method === 'GET') {
+    const submissions = getSubmissions ? getSubmissions() : [];
+    const clients = getClients ? getClients() : [];
+    return sendJson(res, { submissions, clients });
+  }
+
+  // API: POST /api/admin/inbox/update
+  if (pathname === '/api/admin/inbox/update' && req.method === 'POST') {
+    let bodyData = '';
+    req.on('data', chunk => { bodyData += chunk; });
+    req.on('end', () => {
+      try {
+        const { leadId, patch } = JSON.parse(bodyData || '{}');
+        if (!leadId) return sendJson(res, { error: 'leadId is required' }, 400);
+        const updated = updateSubmission(leadId, patch);
+        broadcastSSE('LEAD_UPDATED', { leadId, lead: updated });
+        return sendJson(res, { success: true, lead: updated });
+      } catch (err) {
+        return sendJson(res, { error: err.message }, 500);
+      }
+    });
+    return;
+  }
+
+  // API: POST /api/admin/inbox/reply
+  if (pathname === '/api/admin/inbox/reply' && req.method === 'POST') {
+    let bodyData = '';
+    req.on('data', chunk => { bodyData += chunk; });
+    req.on('end', async () => {
+      try {
+        const { leadId, to, subject, body } = JSON.parse(bodyData || '{}');
+        if (!to || !subject || !body) {
+          return sendJson(res, { error: 'Missing required email fields (to, subject, body)' }, 400);
+        }
+        const result = await sendEmailReply({ to, subject, body, leadId });
+        broadcastSSE('LEAD_UPDATED', { leadId });
+        return sendJson(res, { success: true, result });
+      } catch (err) {
+        console.error('[INBOX REPLY ERROR]', err);
+        return sendJson(res, { error: err.message }, 500);
+      }
+    });
+    return;
+  }
+
+  // API: POST /api/admin/inbox/convert
+  if (pathname === '/api/admin/inbox/convert' && req.method === 'POST') {
+    let bodyData = '';
+    req.on('data', chunk => { bodyData += chunk; });
+    req.on('end', () => {
+      try {
+        const { leadId } = JSON.parse(bodyData || '{}');
+        const lead = findSubmission(leadId);
+        if (!lead) return sendJson(res, { error: 'Lead not found' }, 404);
+
+        const newClient = {
+          id: `client_${Date.now()}`,
+          name: lead.data?.name || 'New Client',
+          email: lead.data?.email || '',
+          company: lead.data?.company && lead.data?.company !== 'none' ? lead.data?.company : '',
+          preferredPlatform: 'DISCORD',
+          channelId: null,
+          footageUrl: '',
+          dropboxUrl: '',
+          deadline: null,
+          milestone: 'Rough Cut Draft',
+          stage: 'INGESTION',
+          createdAt: new Date().toISOString(),
+          deliveries: [],
+          leadId
+        };
+
+        saveClient(newClient);
+        updateSubmission(leadId, { status: 'CONVERTED' });
+        broadcastSSE('LEAD_UPDATED', { leadId, client: newClient });
+        return sendJson(res, { success: true, client: newClient });
+      } catch (err) {
+        return sendJson(res, { error: err.message }, 500);
+      }
+    });
+    return;
   }
 
   // 1. API: /api/menus
