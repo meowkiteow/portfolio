@@ -457,14 +457,24 @@ async function repostWorkWithUsPanel(guild) {
     SendMessages: false
   }).catch(() => {});
 
-  // Clean up any old buttonless or duplicate bot panel messages in this channel
+  // Check if an interactive Tickets / Support panel already exists in this channel
   const fetched = await workChannel.messages.fetch({ limit: 15 }).catch(() => null);
+  const existingPanel = fetched?.find(m => 
+    m.author.id === guild.members.me.id && 
+    m.components.length > 0 && 
+    m.embeds[0]?.title?.includes('Tickets')
+  );
+
+  if (existingPanel) {
+    console.log(`[DISCORD CRM] ✅ Interactive Tickets panel already active in #${workChannel.name} (${existingPanel.id}), preserving message.`);
+    return existingPanel;
+  }
+
+  // Clean up any old buttonless bot messages only if no interactive panel exists
   if (fetched) {
     for (const msg of fetched.values()) {
-      if (msg.author.id === guild.members.me.id) {
-        if (msg.components.length === 0 || msg.embeds[0]?.title?.includes('Tickets') || msg.embeds[0]?.title?.includes('WORK WITH')) {
-          await msg.delete().catch(() => {});
-        }
+      if (msg.author.id === guild.members.me.id && msg.components.length === 0) {
+        await msg.delete().catch(() => {});
       }
     }
   }
@@ -505,7 +515,7 @@ async function repostWorkWithUsPanel(guild) {
 
   const panelMsg = await workChannel.send({ embeds: [panelEmbed], components: [panelButtons] });
   await panelMsg.pin().catch(() => {});
-  console.log(`[DISCORD CRM] ✅ Reposted Tickets / Support panel with buttons in #${workChannel.name} (${workChannel.id})`);
+  console.log(`[DISCORD CRM] ✅ Created Tickets / Support panel in #${workChannel.name} (${workChannel.id})`);
   return panelMsg;
 }
 
