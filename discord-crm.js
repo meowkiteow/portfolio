@@ -179,6 +179,19 @@ const ROLE_CONFIGS = [
     description: 'Onboarded client (view and interact in their private CRM channel)'
   },
   {
+    name: 'Editor',
+    color: 0x1ABC9C, // Teal / Mint
+    permissions: [
+      PermissionsBitField.Flags.ViewChannel,
+      PermissionsBitField.Flags.SendMessages,
+      PermissionsBitField.Flags.EmbedLinks,
+      PermissionsBitField.Flags.AttachFiles,
+      PermissionsBitField.Flags.ReadMessageHistory,
+      PermissionsBitField.Flags.AddReactions
+    ],
+    description: 'Video Editor & Motion Designer (access to assigned project tickets)'
+  },
+  {
     name: 'Member',
     color: 0x3498DB, // Blue
     permissions: [
@@ -217,6 +230,283 @@ async function ensureServerRoles(guild) {
     if (r) createdRoles[cfg.name] = r;
   }
   return createdRoles;
+}
+
+// -------------------------------------------------------------
+// Helper: Build strictly private permission overwrites for ticket channels
+// -------------------------------------------------------------
+function createTicketPermissionOverwrites(guild, creatorMemberId) {
+  const overwrites = [
+    // 1. Explicitly DENY @everyone
+    {
+      id: guild.roles.everyone.id,
+      deny: [PermissionsBitField.Flags.ViewChannel]
+    },
+    // 2. Explicitly ALLOW Ticket Creator
+    {
+      id: creatorMemberId,
+      allow: [
+        PermissionsBitField.Flags.ViewChannel,
+        PermissionsBitField.Flags.SendMessages,
+        PermissionsBitField.Flags.ReadMessageHistory,
+        PermissionsBitField.Flags.AttachFiles,
+        PermissionsBitField.Flags.EmbedLinks,
+        PermissionsBitField.Flags.AddReactions
+      ]
+    },
+    // 3. Explicitly ALLOW Bot
+    {
+      id: guild.members.me.id,
+      allow: [
+        PermissionsBitField.Flags.ViewChannel,
+        PermissionsBitField.Flags.SendMessages,
+        PermissionsBitField.Flags.ReadMessageHistory,
+        PermissionsBitField.Flags.ManageChannels,
+        PermissionsBitField.Flags.EmbedLinks,
+        PermissionsBitField.Flags.AttachFiles
+      ]
+    }
+  ];
+
+  // 4. Explicitly DENY regular member/client roles so other users can never view
+  ['member', 'client'].forEach(name => {
+    const r = guild.roles.cache.find(role => role.name.toLowerCase() === name);
+    if (r && !overwrites.some(o => o.id === r.id)) {
+      overwrites.push({
+        id: r.id,
+        deny: [PermissionsBitField.Flags.ViewChannel]
+      });
+    }
+  });
+
+  // 5. Explicitly ALLOW Editor role(s)
+  const editorRoles = guild.roles.cache.filter(role => 
+    role.name.toLowerCase() === 'editor' || role.name.toLowerCase() === 'editors'
+  );
+  editorRoles.forEach(editorRole => {
+    if (!overwrites.some(o => o.id === editorRole.id)) {
+      overwrites.push({
+        id: editorRole.id,
+        allow: [
+          PermissionsBitField.Flags.ViewChannel,
+          PermissionsBitField.Flags.SendMessages,
+          PermissionsBitField.Flags.ReadMessageHistory,
+          PermissionsBitField.Flags.AttachFiles,
+          PermissionsBitField.Flags.EmbedLinks,
+          PermissionsBitField.Flags.AddReactions
+        ]
+      });
+    }
+  });
+
+  // 6. Explicitly ALLOW Support role
+  const supportRole = guild.roles.cache.find(role => role.name.toLowerCase() === 'support');
+  if (supportRole && !overwrites.some(o => o.id === supportRole.id)) {
+    overwrites.push({
+      id: supportRole.id,
+      allow: [
+        PermissionsBitField.Flags.ViewChannel,
+        PermissionsBitField.Flags.SendMessages,
+        PermissionsBitField.Flags.ReadMessageHistory,
+        PermissionsBitField.Flags.AttachFiles,
+        PermissionsBitField.Flags.EmbedLinks,
+        PermissionsBitField.Flags.AddReactions
+      ]
+    });
+  }
+
+  // 7. Explicitly ALLOW Administrators & Co-Admins
+  guild.roles.cache.forEach(role => {
+    if (
+      role.permissions.has(PermissionsBitField.Flags.Administrator) ||
+      ['co-admin', 'admin', 'administrator'].includes(role.name.toLowerCase())
+    ) {
+      if (!overwrites.some(o => o.id === role.id)) {
+        overwrites.push({
+          id: role.id,
+          allow: [
+            PermissionsBitField.Flags.ViewChannel,
+            PermissionsBitField.Flags.SendMessages,
+            PermissionsBitField.Flags.ReadMessageHistory,
+            PermissionsBitField.Flags.ManageChannels,
+            PermissionsBitField.Flags.ManageMessages,
+            PermissionsBitField.Flags.AttachFiles,
+            PermissionsBitField.Flags.EmbedLinks
+          ]
+        });
+      }
+    }
+  });
+
+  return overwrites;
+}
+
+// -------------------------------------------------------------
+// Helper: Create a private ticket channel under 🎫 TICKETS category
+// -------------------------------------------------------------
+async function createPrivateTicketChannel(guild, user, { topic = 'Project Inquiry', details = '', budget = '' } = {}) {
+  // Find or create "🎫 TICKETS" category
+  let ticketCat = guild.channels.cache.find(c => 
+    c.type === ChannelType.GuildCategory && (c.name.includes('TICKET') || c.id === '1558147743728402494')
+  );
+  if (!ticketCat) {
+    ticketCat = await guild.channels.create({
+      name: '🎫 TICKETS',
+      type: ChannelType.GuildCategory,
+      permissionOverwrites: [
+        {
+          id: guild.roles.everyone.id,
+          deny: [PermissionsBitField.Flags.ViewChannel]
+        }
+      ]
+    });
+  } else {
+    // Ensure category itself is private to @everyone
+    await ticketCat.permissionOverwrites.edit(guild.roles.everyone.id, {
+      ViewChannel: false
+    }).catch(() => {});
+  }
+
+  const cleanUsername = user.username.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 18) || 'client';
+  let baseName = `ticket-${cleanUsername}`;
+  let channelName = baseName;
+  if (guild.channels.cache.some(c => c.name === channelName)) {
+    channelName = `${baseName}-${Math.floor(1000 + Math.random() * 9000)}`;
+  }
+
+  const overwrites = createTicketPermissionOverwrites(guild, user.id);
+
+  const ticketChannel = await guild.channels.create({
+    name: channelName,
+    type: ChannelType.GuildText,
+    parent: ticketCat ? ticketCat.id : null,
+    topic: `🔒 Private Ticket | Client: @${user.tag} (${user.id}) | Topic: ${topic}`,
+    permissionOverwrites: overwrites
+  });
+
+  const editorRole = guild.roles.cache.find(r => r.name.toLowerCase() === 'editor' || r.name.toLowerCase() === 'editors');
+  const coAdminRole = guild.roles.cache.find(r => r.name.toLowerCase() === 'co-admin');
+
+  const ticketEmbed = new EmbedBuilder()
+    .setTitle(`🎫 TICKET — ${topic.toUpperCase()}`)
+    .setColor(0xFFDE31)
+    .setDescription(
+      `Hello <@${user.id}>! This is your **private and confidential** workspace with the Vellisto Studio team.\n\n` +
+      `🔒 **Strict Privacy Enabled:** Only **you**, **Administrators**, and our **Editor** team can view or access this channel. All other server members are denied access.`
+    )
+    .addFields([
+      { name: '👤 Opened By', value: `<@${user.id}> (${user.tag})`, inline: true },
+      { name: '📋 Subject / Service', value: topic || 'Project Inquiry', inline: true },
+      { name: '💰 Budget / Timeline', value: budget || 'Not specified', inline: true },
+      { name: '📝 Description & Details', value: details || 'No additional details provided.', inline: false },
+      { 
+        name: '🛡️ Authorized Access List', 
+        value: `• **Ticket Creator:** <@${user.id}>\n• **Administrators:** ${coAdminRole ? `<@&${coAdminRole.id}>` : 'Server Admins'}\n• **Editors:** ${editorRole ? `<@&${editorRole.id}>` : '@Editor'}\n• **Other Server Members:** 🚫 Denied Access`,
+        inline: false 
+      }
+    ])
+    .setFooter({ text: 'Vellisto Studio • Private Ticket System' })
+    .setTimestamp();
+
+  const ticketActionRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`close_ticket:${ticketChannel.id}`)
+      .setLabel('🔒 Close Ticket')
+      .setStyle(ButtonStyle.Danger),
+    new ButtonBuilder()
+      .setCustomId(`ticket_info:${ticketChannel.id}`)
+      .setLabel('ℹ️ Privacy Breakdown')
+      .setStyle(ButtonStyle.Secondary)
+  );
+
+  await ticketChannel.send({
+    content: `👋 <@${user.id}> ${editorRole ? `<@&${editorRole.id}>` : ''} ${coAdminRole ? `<@&${coAdminRole.id}>` : ''}`,
+    embeds: [ticketEmbed],
+    components: [ticketActionRow]
+  });
+
+  console.log(`[DISCORD CRM] ✅ Created secure private ticket #${ticketChannel.name} (${ticketChannel.id}) for user @${user.tag}`);
+  return ticketChannel;
+}
+
+// -------------------------------------------------------------
+// Helper: Repost the official Tickets / Support / Work With Us panel with buttons
+// -------------------------------------------------------------
+async function repostWorkWithUsPanel(guild) {
+  let workChannel = guild.channels.cache.find(c => 
+    c.name === 'work-with-us' || 
+    c.name === '💼│workwithus' || 
+    c.name.includes('workwithus') || 
+    (c.name.includes('work') && c.name.includes('with') && c.name.includes('us'))
+  );
+
+  if (!workChannel) {
+    const infoCat = guild.channels.cache.find(c => c.type === ChannelType.GuildCategory && c.name.toLowerCase().includes('information'));
+    workChannel = await guild.channels.create({
+      name: 'work-with-us',
+      type: ChannelType.GuildText,
+      parent: infoCat ? infoCat.id : null,
+      topic: 'Open a private ticket to work with Vellisto Studio founders and editors'
+    });
+  }
+
+  // Ensure @everyone can view channel and read history, but not send spam messages
+  await workChannel.permissionOverwrites.edit(guild.roles.everyone.id, {
+    ViewChannel: true,
+    ReadMessageHistory: true,
+    SendMessages: false
+  }).catch(() => {});
+
+  // Clean up any old buttonless or duplicate bot panel messages in this channel
+  const fetched = await workChannel.messages.fetch({ limit: 15 }).catch(() => null);
+  if (fetched) {
+    for (const msg of fetched.values()) {
+      if (msg.author.id === guild.members.me.id) {
+        if (msg.components.length === 0 || msg.embeds[0]?.title?.includes('Tickets') || msg.embeds[0]?.title?.includes('WORK WITH')) {
+          await msg.delete().catch(() => {});
+        }
+      }
+    }
+  }
+
+  const panelEmbed = new EmbedBuilder()
+    .setTitle('🎫 Tickets / Support — Work With Us')
+    .setColor(0x3498DB)
+    .setDescription(
+      'Need help with a project, have a question, or want to discuss a new video production retainer? **Open a private ticket below** and our team will pick it up immediately.\n\n' +
+      '**🔒 Private & Confidential by Default**\n' +
+      'When you open a ticket, a private channel is created exclusively for you, our **Administrators**, and our **Editor** team. No other server members can view or access your conversation.\n\n' +
+      '**⚡ What can you use tickets for?**\n' +
+      '• New video project inquiries, YouTube long-form & short-form retainers\n' +
+      '• Footage delivery, project briefs & creative direction\n' +
+      '• Edit revisions, status updates & general support questions'
+    )
+    .addFields([
+      {
+        name: '📌 How to Open a Ticket',
+        value: 'Click the **🚀 Open a Ticket / Work With Us** button below to create your private ticket channel.',
+        inline: false
+      }
+    ])
+    .setFooter({ text: '🔒 Private by default — only you, Support, Editors and admins can see your ticket.' });
+
+  const panelButtons = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('open_ticket_btn')
+      .setLabel('🚀 Open a Ticket / Work With Us')
+      .setStyle(ButtonStyle.Success)
+      .setEmoji('🎫'),
+    new ButtonBuilder()
+      .setCustomId('open_support_ticket_btn')
+      .setLabel('💬 General Support')
+      .setStyle(ButtonStyle.Primary)
+      .setEmoji('❓')
+  );
+
+  const panelMsg = await workChannel.send({ embeds: [panelEmbed], components: [panelButtons] });
+  await panelMsg.pin().catch(() => {});
+  console.log(`[DISCORD CRM] ✅ Reposted Tickets / Support panel with buttons in #${workChannel.name} (${workChannel.id})`);
+  return panelMsg;
 }
 
 // -------------------------------------------------------------
@@ -264,7 +554,7 @@ async function provisionServerStructure(guild) {
       .addFields([
         {
           name: '👑 Available Server Roles',
-          value: '• **@Co-Admin**: Full administrative permissions\n• **@Support**: Customer success & project management\n• **@Client**: Access to private client CRM workspaces\n• **@Member**: Standard community member',
+          value: '• **@Co-Admin**: Full administrative permissions\n• **@Editor**: Video editor & motion designer access\n• **@Support**: Customer success & project management\n• **@Client**: Access to private client CRM workspaces\n• **@Member**: Standard community member',
           inline: false
         },
         {
@@ -295,43 +585,8 @@ async function provisionServerStructure(guild) {
       await pMsg.pin().catch(() => {});
     }
 
-    // 2. Public #work-with-us Channel (for Members to start projects)
-    let workWithUsChannel = guild.channels.cache.find(c => c.name === 'work-with-us');
-    if (!workWithUsChannel) {
-      workWithUsChannel = await guild.channels.create({
-        name: 'work-with-us',
-        type: ChannelType.GuildText,
-        topic: 'Start a new project with Vellisto Studio founders'
-      });
-      console.log(`[DISCORD CRM] Created #work-with-us channel (${workWithUsChannel.id})`);
-    }
-
-    const workEmbed = new EmbedBuilder()
-      .setTitle('🎬 WORK WITH VELLISTO STUDIO')
-      .setColor(0xFFDE31)
-      .setDescription('Ready to scale your content with high-retention video editing and creative direction?\n\nClick the button below to **start a private project discussion** directly with our founders!')
-      .addFields([
-        {
-          name: '✨ What Happens Next?',
-          value: 'A private discussion room will be opened exclusively between you, the founder, and our team to review your footage, style, and rates.',
-          inline: false
-        }
-      ])
-      .setFooter({ text: 'Vellisto Studio • Video Production & Editing' });
-
-    const workButton = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId('member_start_project')
-        .setLabel('🚀 Work With Us / Start Project')
-        .setStyle(ButtonStyle.Success)
-    );
-
-    const workMessages = await workWithUsChannel.messages.fetch({ limit: 10 }).catch(() => null);
-    const existingWorkPanel = workMessages?.find(m => m.embeds[0]?.title?.includes('WORK WITH VELLISTO STUDIO'));
-    if (!existingWorkPanel) {
-      const wMsg = await workWithUsChannel.send({ embeds: [workEmbed], components: [workButton] });
-      await wMsg.pin().catch(() => {});
-    }
+    // 2. Repost / refresh Tickets / Support panel with interactive buttons in #work-with-us
+    await repostWorkWithUsPanel(guild);
 
     console.log('[DISCORD CRM] ✅ Server structure & roles fully provisioned!');
   } catch (err) {
@@ -481,7 +736,8 @@ async function createClientChannel(data) {
     name: channelName,
     type: ChannelType.GuildText,
     parent: categoryChannel ? categoryChannel.id : null,
-    topic: `Vellisto Video Production Hub | ${data.name} | Platform: ${data.preferredPlatform || 'EMAIL'}`
+    topic: `Vellisto Video Production Hub | ${data.name} | Platform: ${data.preferredPlatform || 'EMAIL'}`,
+    permissionOverwrites: createTicketPermissionOverwrites(targetGuild, data.discordUserId || targetGuild.members.me.id)
   });
 
   const clientId = `client_${Date.now()}`;
@@ -632,6 +888,23 @@ function initDiscordCRM() {
     }
   });
 
+  // Fast chat command / trigger: ticket: [issue]
+  client.on('messageCreate', async (message) => {
+    if (message.author.bot || !message.guild) return;
+    if (!message.content.trim().toLowerCase().startsWith('ticket:')) return;
+
+    try {
+      const issue = message.content.slice(7).trim();
+      const ticketChannel = await createPrivateTicketChannel(message.guild, message.author, {
+        topic: 'Support Ticket',
+        details: issue || 'Opened via chat command'
+      });
+      await message.reply(`✅ **Private ticket channel created:** <#${ticketChannel.id}>!\n🔒 Only you, Administrators, and our Editor team can access it.`);
+    } catch (err) {
+      console.error('[DISCORD CRM ERROR] Failed to create ticket from text command:', err);
+    }
+  });
+
   client.on('interactionCreate', async (interaction) => {
     try {
       // =======================================================
@@ -670,40 +943,97 @@ function initDiscordCRM() {
           });
         }
 
-        // C. Member "Work With Us" Button in #work-with-us
-        if (customId === 'member_start_project') {
+        // C. Member "Work With Us" / Open Ticket Buttons
+        if (customId === 'open_ticket_btn' || customId === 'open_support_ticket_btn' || customId === 'member_start_project') {
+          const isSupport = customId === 'open_support_ticket_btn';
           const modal = new ModalBuilder()
-            .setCustomId(`member_modal_project:${interaction.user.id}`)
-            .setTitle('Start a Project with Vellisto');
+            .setCustomId(`ticket_modal:${interaction.user.id}:${isSupport ? 'support' : 'project'}`)
+            .setTitle(isSupport ? 'Open Support Ticket' : 'Open Ticket — Work With Us');
 
-          const typeInput = new TextInputBuilder()
-            .setCustomId('project_type')
-            .setLabel('Project Type (Shorts/YouTube/Ads)')
+          const topicInput = new TextInputBuilder()
+            .setCustomId('ticket_topic')
+            .setLabel(isSupport ? 'Issue / Topic' : 'Project Type (Shorts/YouTube/Ads/Retainer)')
             .setStyle(TextInputStyle.Short)
-            .setPlaceholder('e.g. 10x YouTube Shorts Retainer')
-            .setRequired(true);
-
-          const budgetInput = new TextInputBuilder()
-            .setCustomId('project_budget')
-            .setLabel('Budget / Target Volume')
-            .setStyle(TextInputStyle.Short)
-            .setPlaceholder('e.g. $1,000 - $2,500 / month')
+            .setPlaceholder(isSupport ? 'e.g. Revision on recent short-form edit' : 'e.g. 10x YouTube Shorts Retainer')
             .setRequired(true);
 
           const descInput = new TextInputBuilder()
-            .setCustomId('project_desc')
-            .setLabel('Tell Us About Your Project & References')
+            .setCustomId('ticket_details')
+            .setLabel(isSupport ? 'Describe your issue or question' : 'Project Scope, References & Channel Link')
             .setStyle(TextInputStyle.Paragraph)
-            .setPlaceholder('Link your channel, reference videos, or goals...')
+            .setPlaceholder('Provide details, links to footage, reference channels, or questions...')
             .setRequired(true);
 
+          const budgetInput = new TextInputBuilder()
+            .setCustomId('ticket_budget')
+            .setLabel(isSupport ? 'Priority / Timeline (Optional)' : 'Budget / Target Timeline (Optional)')
+            .setStyle(TextInputStyle.Short)
+            .setPlaceholder(isSupport ? 'e.g. Urgent / Normal' : 'e.g. $1,000 - $2,500 / month')
+            .setRequired(false);
+
           modal.addComponents(
-            new ActionRowBuilder().addComponents(typeInput),
-            new ActionRowBuilder().addComponents(budgetInput),
-            new ActionRowBuilder().addComponents(descInput)
+            new ActionRowBuilder().addComponents(topicInput),
+            new ActionRowBuilder().addComponents(descInput),
+            new ActionRowBuilder().addComponents(budgetInput)
           );
 
           return await interaction.showModal(modal);
+        }
+
+        // C.1 Ticket Management: Close Ticket
+        if (customId.startsWith('close_ticket:')) {
+          const chId = customId.split(':')[1] || interaction.channelId;
+          return await interaction.reply({
+            content: '⚠️ **Are you sure you want to close this ticket?** This channel will be permanently archived and removed.',
+            components: [
+              new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                  .setCustomId(`confirm_close_ticket:${chId}`)
+                  .setLabel('🔒 Confirm Close & Delete Channel')
+                  .setStyle(ButtonStyle.Danger),
+                new ButtonBuilder()
+                  .setCustomId('cancel_close_ticket')
+                  .setLabel('Cancel')
+                  .setStyle(ButtonStyle.Secondary)
+              )
+            ],
+            ephemeral: true
+          });
+        }
+
+        if (customId.startsWith('confirm_close_ticket:')) {
+          const chId = customId.split(':')[1] || interaction.channelId;
+          const ch = interaction.guild.channels.cache.get(chId) || interaction.channel;
+          await interaction.reply({ content: '🔒 **Ticket closed.** Channel will self-destruct in 5 seconds...' });
+          setTimeout(() => { ch.delete('Ticket closed by user/admin').catch(() => {}); }, 5000);
+          return;
+        }
+
+        if (customId === 'cancel_close_ticket') {
+          return await interaction.update({ content: '❎ Ticket close request cancelled.', components: [] });
+        }
+
+        if (customId.startsWith('ticket_info:')) {
+          const ch = interaction.channel;
+          const overwrites = ch.permissionOverwrites.cache;
+          const allowedNames = [];
+          const deniedNames = [];
+
+          overwrites.forEach(po => {
+            const role = interaction.guild.roles.cache.get(po.id);
+            const user = interaction.guild.members.cache.get(po.id)?.user;
+            const name = role ? `@${role.name}` : (user ? `@${user.tag}` : po.id);
+            if (po.allow.has(PermissionsBitField.Flags.ViewChannel)) allowedNames.push(name);
+            if (po.deny.has(PermissionsBitField.Flags.ViewChannel)) deniedNames.push(name);
+          });
+
+          return await interaction.reply({
+            content: `🔒 **Private Ticket Privacy Verification:**\n\n` +
+              `✅ **Explicitly Allowed Access:**\n${allowedNames.map(n => `• ${n}`).join('\n') || 'None'}\n\n` +
+              `🚫 **Explicitly Denied Access:**\n${deniedNames.map(n => `• ${n}`).join('\n') || 'None'}\n\n` +
+              `*No unauthorized server members can view this channel.*`,
+            ephemeral: true
+          });
         }
 
         // D. Inbound Lead: Create Dedicated Discussion Room Channel (Separated from #inquiries)
@@ -722,7 +1052,13 @@ function initDiscordCRM() {
           if (!discCat) {
             discCat = await guild.channels.create({
               name: '💬 DISCUSSIONS',
-              type: ChannelType.GuildCategory
+              type: ChannelType.GuildCategory,
+              permissionOverwrites: [
+                {
+                  id: guild.roles.everyone.id,
+                  deny: [PermissionsBitField.Flags.ViewChannel]
+                }
+              ]
             }).catch(() => null);
           }
 
@@ -731,7 +1067,8 @@ function initDiscordCRM() {
             name: `deal-${cleanLeadName}`,
             type: ChannelType.GuildText,
             parent: discCat ? discCat.id : null,
-            topic: `Active Negotiation Room | ${lead.data?.name} | ${lead.data?.email || 'No email'}`
+            topic: `Active Negotiation Room | ${lead.data?.name} | ${lead.data?.email || 'No email'}`,
+            permissionOverwrites: createTicketPermissionOverwrites(guild, guild.members.me.id)
           });
 
           // Action Card inside the new discussion channel
@@ -1243,74 +1580,34 @@ function initDiscordCRM() {
       if (interaction.isModalSubmit()) {
         const [action, param] = interaction.customId.split(':');
 
-        // Member "Work With Us" Modal Submission
-        if (action === 'member_modal_project') {
+        // Member "Work With Us" / Ticket Modal Submission
+        if (action === 'ticket_modal' || action === 'member_modal_project') {
           await interaction.deferReply({ ephemeral: true });
-          const memberId = param;
-          const projectType = interaction.fields.getTextInputValue('project_type');
-          const budget = interaction.fields.getTextInputValue('project_budget');
-          const desc = interaction.fields.getTextInputValue('project_desc');
-
           const guild = interaction.guild;
           if (!guild) return interaction.editReply({ content: '❌ Guild not found.' });
 
-          // Create private channel between Member + Founders/Co-Admins
-          let discCat = guild.channels.cache.find(c => c.type === ChannelType.GuildCategory && c.name.toLowerCase().includes('discussion'));
-          if (!discCat) {
-            discCat = await guild.channels.create({
-              name: '💬 DISCUSSIONS',
-              type: ChannelType.GuildCategory
-            }).catch(() => null);
-          }
+          let topic = 'Project Inquiry';
+          let details = '';
+          let budget = '';
 
-          const privateInquiryChannel = await guild.channels.create({
-            name: `inquiry-${interaction.user.username.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-            type: ChannelType.GuildText,
-            parent: discCat ? discCat.id : null,
-            topic: `Private Project Discussion with ${interaction.user.tag}`,
-            permissionOverwrites: [
-              {
-                id: guild.roles.everyone.id,
-                deny: [PermissionsBitField.Flags.ViewChannel]
-              },
-              {
-                id: memberId,
-                allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.AttachFiles]
-              },
-              {
-                id: guild.members.me.id,
-                allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.EmbedLinks]
-              }
-            ]
-          });
+          try {
+            topic = interaction.fields.getTextInputValue('ticket_topic') || interaction.fields.getTextInputValue('project_type') || 'Project Inquiry';
+          } catch (_) {}
+          try {
+            details = interaction.fields.getTextInputValue('ticket_details') || interaction.fields.getTextInputValue('project_desc') || '';
+          } catch (_) {}
+          try {
+            budget = interaction.fields.getTextInputValue('ticket_budget') || interaction.fields.getTextInputValue('project_budget') || '';
+          } catch (_) {}
 
-          const coAdminRole = guild.roles.cache.find(r => r.name === 'Co-Admin');
-          if (coAdminRole) {
-            await privateInquiryChannel.permissionOverwrites.create(coAdminRole.id, {
-              ViewChannel: true,
-              SendMessages: true
-            }).catch(() => {});
-          }
-
-          const projectCard = new EmbedBuilder()
-            .setTitle(`🚀 NEW PROJECT INQUIRY — @${interaction.user.username}`)
-            .setColor(0xFFDE31)
-            .setDescription(`Private room between <@${memberId}> and Vellisto Studio Founders.`)
-            .addFields([
-              { name: '🎬 Project Type', value: projectType, inline: true },
-              { name: '💰 Budget / Volume', value: budget, inline: true },
-              { name: '📝 Description & References', value: desc, inline: false }
-            ])
-            .setFooter({ text: 'Vellisto Deal Desk • Direct Founder Chat' })
-            .setTimestamp();
-
-          await privateInquiryChannel.send({
-            content: `👋 Welcome <@${memberId}>! Our founders and team will discuss your project with you here.`,
-            embeds: [projectCard]
+          const ticketChannel = await createPrivateTicketChannel(guild, interaction.user, {
+            topic,
+            details,
+            budget
           });
 
           return await interaction.editReply({
-            content: `🎉 **Your private project room is ready:** <#${privateInquiryChannel.id}>! Tap to join the chat with our founders.`
+            content: `🎉 **Your private ticket channel is ready:** <#${ticketChannel.id}>!\n\n🔒 **Privacy Confirmed:** Only you, Administrators, and our Editor team have access.`
           });
         }
 
