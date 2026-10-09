@@ -285,7 +285,9 @@ function serveSpaHtml(pathname, res) {
 
     res.writeHead(is404 ? 404 : 200, {
       'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'no-cache',
+      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+      'Pragma': 'no-cache',
+      'Expires': '0',
       'X-Content-Type-Options': 'nosniff'
     });
     res.end(html);
@@ -344,19 +346,19 @@ function getCacheControl(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   const base = path.basename(filePath);
 
-  // Hashed Vite production bundles (e.g. index-451442ce.js, index-c1064074.css) are immutable
-  if (/-[a-f0-9]{8}\.(js|css)$/.test(base)) {
+  // Hashed Vite production bundles (e.g. index-451442ce.js, index-c1064074.css) and Lenis are immutable
+  if (/-[a-f0-9]{8}\.(js|css)$/.test(base) || base.includes('lenis')) {
     return 'public, max-age=31536000, immutable';
   }
 
-  // HTML pages and dynamic API JSON - revalidate so routing stays fresh
+  // HTML pages and dynamic API JSON - NEVER cache on disk, always check server so updates are instant
   if (['.html', '.json'].includes(ext)) {
-    return 'no-cache, must-revalidate';
+    return 'no-cache, no-store, must-revalidate, max-age=0';
   }
 
-  // Videos, audio, Rive animations, images, and fonts - 7 days cache with stale-while-revalidate
+  // Videos, audio, Rive animations, images, and fonts - 1 year heavy caching so videos and showreels never lag
   if (['.mp4', '.webm', '.riv', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.woff', '.woff2', '.ttf'].includes(ext)) {
-    return 'public, max-age=604800, stale-while-revalidate=86400';
+    return 'public, max-age=31536000, stale-while-revalidate=86400';
   }
 
   // General static assets
