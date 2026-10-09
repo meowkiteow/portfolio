@@ -2083,70 +2083,9 @@ async function handleInboundEmail(emailData) {
   return false;
 }
 
-// -------------------------------------------------------------
-// Direct Email Reply Helper (Used by Admin Deal Desk)
-// -------------------------------------------------------------
-async function sendEmailReply({ to, subject, body, leadId }) {
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'Krishna | Vellisto <hello@vellisto.com>';
-  if (!resend) {
-    const resendKey = process.env.RESEND_API_KEY;
-    if (resendKey) resend = new Resend(resendKey);
-  }
-  if (!resend) {
-    throw new Error('Resend API key is not configured');
-  }
-
-  const paragraphs = body.split('\n\n').map(p => `<p style="margin: 0 0 14px 0; font-size: 15px; line-height: 1.6; color: #1a1a1a;">${p.replace(/\n/g, '<br/>')}</p>`).join('');
-  const result = await resend.emails.send({
-    from: fromEmail,
-    to: to,
-    reply_to: 'hello@vellisto.com',
-    subject,
-    text: `${body}\n\n--\nKrishna\nVellisto Studio • https://vellisto.com`,
-    html: `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; color: #1a1a1a; padding: 12px 0;">
-        ${paragraphs}
-        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #eee; font-size: 13px; color: #666;">
-          <p style="margin: 0; font-weight: 600; color: #111;">Krishna</p>
-          <p style="margin: 2px 0 0 0;">Vellisto Studio • Video Production & Motion</p>
-          <p style="margin: 2px 0 0 0;"><a href="https://vellisto.com" style="color: #666; text-decoration: underline;">vellisto.com</a></p>
-        </div>
-      </div>
-    `
-  });
-
-  if (leadId) {
-    const lead = findSubmission(leadId);
-    if (lead) {
-      if (!lead.replies) lead.replies = [];
-      lead.replies.push({
-        id: `reply_${Date.now()}`,
-        timestamp: new Date().toISOString(),
-        to,
-        subject,
-        body,
-        resendId: result.data?.id || null
-      });
-      if (!lead.status || lead.status === 'NEW') {
-        lead.status = 'PROPOSAL_SENT';
-      }
-      updateSubmission(leadId, lead);
-    }
-  }
-
-  return result;
-}
-
 module.exports = {
   initDiscordCRM,
   sendLeadViaBot,
   createClientChannel,
-  handleInboundEmail,
-  sendEmailReply,
-  getSubmissions,
-  updateSubmission,
-  findSubmission,
-  getClients,
-  saveClient,
-  findClient
+  handleInboundEmail
 };
