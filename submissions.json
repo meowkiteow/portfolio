@@ -348,5 +348,16 @@
       "message": "HiHi, I’m looking for a project\n",
       "origin": "Direct Email (hello@vellisto.com)"
     }
+  },
+  {
+    "id": "lead_1791504143740_v0d5",
+    "timestamp": "2026-10-09T00:02:23.740Z",
+    "action": "inbound-email",
+    "data": {
+      "name": "pokeak1808@gmail.com",
+      "email": "pokeak1808@gmail.com",
+      "message": "Hmm interesting\n",
+      "origin": "Direct Email (hello@vellisto.com)"
+    }
   }
 ]
