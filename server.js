@@ -15,7 +15,9 @@ const FATHOM_DIR = path.join(__dirname, 'cdn.usefathom.com');
 const indexHtmlRaw = fs.readFileSync(path.join(ROOT_DIR, 'index.html'), 'utf8');
 
 // Ensure <base href="/"> exists for SPA client-side deep routing and sanitize domain
-let indexHtml = indexHtmlRaw.replace(/https:\/\/wondermake\.xyz\//g, '/');
+let indexHtml = indexHtmlRaw
+  .replace(/https:\/\/wondermake\.xyz\//g, '/')
+  .replace(/https:\/\/vellisto\.com\/(thumbs|uploads|assets|manifest\.webmanifest)/g, '/$1');
 if (!indexHtml.includes('<base href="/">')) {
   indexHtml = indexHtml.replace('<head>', '<head><base href="/">');
 }
