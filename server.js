@@ -321,19 +321,25 @@ const MIME_TYPES = {
 // Determine cache policy by file path
 function getCacheControl(filePath) {
   const ext = path.extname(filePath).toLowerCase();
+  const base = path.basename(filePath);
 
-  // Always force fresh revalidation for JS and CSS during active development
-  if (['.js', '.css', '.html'].includes(ext)) {
-    return 'no-cache, no-store, must-revalidate';
+  // Hashed Vite production bundles (e.g. index-451442ce.js, index-c1064074.css) are immutable
+  if (/-[a-f0-9]{8}\.(js|css)$/.test(base)) {
+    return 'public, max-age=31536000, immutable';
   }
 
-  // Videos, audio, Rive animations, images, and fonts
+  // HTML pages and dynamic API JSON - revalidate so routing stays fresh
+  if (['.html', '.json'].includes(ext)) {
+    return 'no-cache, must-revalidate';
+  }
+
+  // Videos, audio, Rive animations, images, and fonts - 7 days cache with stale-while-revalidate
   if (['.mp4', '.webm', '.riv', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.woff', '.woff2', '.ttf'].includes(ext)) {
-    return 'public, max-age=86400, stale-while-revalidate=604800';
+    return 'public, max-age=604800, stale-while-revalidate=86400';
   }
 
-  // Dynamic endpoints and HTML
-  return 'no-cache, no-store, must-revalidate';
+  // General static assets
+  return 'public, max-age=86400, stale-while-revalidate=86400';
 }
 
 const memoryGzipCache = new Map();
@@ -346,6 +352,9 @@ function serveGzipped(filePath, contentType, req, res) {
     const stat = fs.statSync(filePath);
     let cached = memoryGzipCache.get(filePath);
     if (!cached || cached.mtime !== stat.mtimeMs) {
+      if (memoryGzipCache.size > 100) {
+        memoryGzipCache.clear();
+      }
       const content = fs.readFileSync(filePath);
       const compressed = zlib.gzipSync(content);
       cached = { content, compressed, mtime: stat.mtimeMs };
@@ -392,9 +401,13 @@ function serveFileWithRange(filePath, contentType, req, res) {
     if (range) {
       const parts = range.replace(/bytes=/, '').split('-');
       const start = parseInt(parts[0], 10);
-      const end = parts[1] ? parseInt(parts[1], 10) : total - 1;
+      const isVideo = ['.mp4', '.webm'].includes(ext);
+      // Bound chunk size to 2MB for open-ended range requests to avoid high memory spikes
+      const MAX_CHUNK = 2 * 1024 * 1024;
+      let requestedEnd = parts[1] ? parseInt(parts[1], 10) : total - 1;
+      let end = (parts[1] || !isVideo) ? requestedEnd : Math.min(start + MAX_CHUNK - 1, total - 1);
 
-      if (start >= total || end >= total) {
+      if (start >= total || end >= total || start > end) {
         res.writeHead(416, { 'Content-Range': `bytes */${total}` });
         return res.end();
       }
@@ -559,6 +572,27 @@ process.on('unhandledRejection', (reason) => {
   console.error('[SERVER ERROR] Unhandled rejection:', reason);
 });
 
+let appJsCache = null;
+
+function getPreparedAppJs(filePath) {
+  const stat = fs.statSync(filePath);
+  if (appJsCache && appJsCache.mtime === stat.mtimeMs) {
+    return appJsCache;
+  }
+  let jsContent = fs.readFileSync(filePath, 'utf8');
+  jsContent = jsContent.replace(/https:\/\/unpkg\.com\//g, '/unpkg.com/');
+  jsContent = jsContent.replace(/https:\/\/cdn\.jsdelivr\.net\/npm\//g, '/unpkg.com/');
+  jsContent = jsContent.replace(/https:\/\/cdn\.usefathom\.com\//g, '/cdn.usefathom.com/');
+  jsContent = jsContent.replace(/https:\/\/wondermake\.xyz\//g, '/');
+  const compressed = zlib.gzipSync(Buffer.from(jsContent, 'utf8'));
+  appJsCache = {
+    mtime: stat.mtimeMs,
+    content: jsContent,
+    compressed: compressed
+  };
+  return appJsCache;
+}
+
 const server = http.createServer((req, res) => {
   try {
     const parsedUrl = url.parse(req.url, true);
@@ -592,6 +626,16 @@ const server = http.createServer((req, res) => {
   if (parsedUrl.query && (parsedUrl.query.cid || parsedUrl.query.sid)) {
     res.writeHead(204, { 'Access-Control-Allow-Origin': '*' });
     return res.end();
+  }
+
+  // Lightweight Health & Keep-Alive Ping (used by UptimeRobot / Cron-Job / Monitoring)
+  if ((pathname === '/api/health' || pathname === '/health' || pathname === '/ping') && req.method === 'GET') {
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Access-Control-Allow-Origin': '*'
+    });
+    return res.end(JSON.stringify({ status: 'ok', uptime: Math.floor(process.uptime()), timestamp: Date.now() }));
   }
 
   // Redirect legacy /hosting route to /terms
@@ -818,39 +862,29 @@ const server = http.createServer((req, res) => {
     const ext = path.extname(localFilePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
-    // Intercept main app JS to route unpkg & fathom locally if needed
+    // Intercept main app JS to route unpkg & fathom locally with high-performance memoization
     if (path.basename(localFilePath).startsWith('index-') && ext === '.js') {
       try {
-        let jsContent = fs.readFileSync(localFilePath, 'utf8');
-        jsContent = jsContent.replace(/https:\/\/unpkg\.com\//g, '/unpkg.com/');
-        jsContent = jsContent.replace(/https:\/\/cdn\.jsdelivr\.net\/npm\//g, '/unpkg.com/');
-        jsContent = jsContent.replace(/https:\/\/cdn\.usefathom\.com\//g, '/cdn.usefathom.com/');
-        jsContent = jsContent.replace(/https:\/\/wondermake\.xyz\//g, '/');
+        const prepared = getPreparedAppJs(localFilePath);
         const cacheControl = getCacheControl(localFilePath);
         const acceptEncoding = req.headers['accept-encoding'] || '';
         if (acceptEncoding.includes('gzip')) {
-          zlib.gzip(Buffer.from(jsContent, 'utf8'), (err, compressed) => {
-            if (err) {
-              res.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8', 'Cache-Control': cacheControl });
-              return res.end(jsContent);
-            }
-            res.writeHead(200, {
-              'Content-Type': 'application/javascript; charset=utf-8',
-              'Content-Encoding': 'gzip',
-              'Content-Length': compressed.length,
-              'Cache-Control': cacheControl,
-              'Vary': 'Accept-Encoding'
-            });
-            res.end(compressed);
+          res.writeHead(200, {
+            'Content-Type': 'application/javascript; charset=utf-8',
+            'Content-Encoding': 'gzip',
+            'Content-Length': prepared.compressed.length,
+            'Cache-Control': cacheControl,
+            'Vary': 'Accept-Encoding'
           });
+          return res.end(prepared.compressed);
         } else {
           res.writeHead(200, {
             'Content-Type': 'application/javascript; charset=utf-8',
+            'Content-Length': Buffer.byteLength(prepared.content, 'utf8'),
             'Cache-Control': cacheControl
           });
-          res.end(jsContent);
+          return res.end(prepared.content);
         }
-        return;
       } catch (e) {
         // Fallback to normal stream
       }
