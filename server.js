@@ -297,6 +297,27 @@ function serveSpaHtml(pathname, res) {
   }
 }
 
+const maintenanceHtmlPath = path.join(ROOT_DIR, 'maintenance.html');
+function getMaintenanceHtml() {
+  try {
+    if (fs.existsSync(maintenanceHtmlPath)) {
+      return fs.readFileSync(maintenanceHtmlPath, 'utf8');
+    }
+  } catch (e) {
+    console.error('Failed to load maintenance.html:', e.message);
+  }
+  return '<!DOCTYPE html><html><head><title>Vellisto | Maintenance</title></head><body style="background:#0b0b0b;color:#fff;font-family:sans-serif;text-align:center;padding:100px 20px;"><h1>Vellisto</h1><p>Scheduled maintenance in progress. Please check back soon.</p></body></html>';
+}
+
+function serveMaintenanceHtml(res, status = 200) {
+  res.writeHead(status, {
+    'Content-Type': 'text/html; charset=utf-8',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'X-Content-Type-Options': 'nosniff'
+  });
+  res.end(getMaintenanceHtml());
+}
+
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
@@ -652,6 +673,11 @@ const server = http.createServer((req, res) => {
     return res.end();
   }
 
+  // Dedicated maintenance route
+  if (pathname === '/maintenance' || pathname === '/maintenance/') {
+    return serveMaintenanceHtml(res, 200);
+  }
+
   // 1. API: /api/menus
   if (pathname === '/api/menus' && req.method === 'GET') {
     return sendJson(res, { data: ssrData.menus || {} });
@@ -893,6 +919,18 @@ const server = http.createServer((req, res) => {
     }
 
     return serveFileWithRange(localFilePath, contentType, req, res);
+  }
+
+  // Maintenance mode check for general page routes
+  const isMaintenanceMode = process.env.MAINTENANCE_MODE === 'true' || parsedUrl.query?.maintenance === '1';
+  const hasBypass = parsedUrl.query?.bypass === '1' || (req.headers.cookie && req.headers.cookie.includes('vellisto_bypass_maintenance=1'));
+  
+  if (isMaintenanceMode && !hasBypass) {
+    return serveMaintenanceHtml(res, 200);
+  }
+
+  if (parsedUrl.query?.bypass === '1') {
+    res.setHeader('Set-Cookie', 'vellisto_bypass_maintenance=1; Path=/; Max-Age=86400; SameSite=Lax');
   }
 
   // 10. SPA fallback: serve dynamic SSR index.html for all page routes
