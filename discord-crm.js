@@ -899,7 +899,11 @@ function initDiscordCRM() {
         topic: 'Support Ticket',
         details: issue || 'Opened via chat command'
       });
-      await message.reply(`✅ **Private ticket channel created:** <#${ticketChannel.id}>!\n🔒 Only you, Administrators, and our Editor team can access it.`);
+      const replyMsg = await message.reply(`✅ <@${message.author.id}> **Private ticket channel created:** <#${ticketChannel.id}>!\n🔒 Only you, Administrators, and our Editor team can access it.\n*(This message will automatically delete in 1 minute)*`);
+      setTimeout(async () => {
+        await replyMsg.delete().catch(() => {});
+        await message.delete().catch(() => {});
+      }, 60000);
     } catch (err) {
       console.error('[DISCORD CRM ERROR] Failed to create ticket from text command:', err);
     }
@@ -1582,7 +1586,7 @@ function initDiscordCRM() {
 
         // Member "Work With Us" / Ticket Modal Submission
         if (action === 'ticket_modal' || action === 'member_modal_project') {
-          await interaction.deferReply({ ephemeral: true });
+          await interaction.deferReply();
           const guild = interaction.guild;
           if (!guild) return interaction.editReply({ content: '❌ Guild not found.' });
 
@@ -1606,9 +1610,22 @@ function initDiscordCRM() {
             budget
           });
 
-          return await interaction.editReply({
-            content: `🎉 **Your private ticket channel is ready:** <#${ticketChannel.id}>!\n\n🔒 **Privacy Confirmed:** Only you, Administrators, and our Editor team have access.`
+          await interaction.editReply({
+            content: `🎉 <@${interaction.user.id}> **Your private ticket channel is ready:** <#${ticketChannel.id}>!\n\n🔒 **Privacy Confirmed:** Only you, Administrators, and our Editor team have access.\n*(This message will automatically delete in 1 minute)*`
           });
+
+          // Automatically delete confirmation message after 1 minute (60 seconds)
+          setTimeout(async () => {
+            try {
+              await interaction.deleteReply();
+            } catch (_) {
+              try {
+                const msg = await interaction.fetchReply();
+                if (msg) await msg.delete().catch(() => {});
+              } catch (_) {}
+            }
+          }, 60000);
+          return;
         }
 
         // Fast Email Deliveries (Pricing, Portfolio, Proposal, Custom)
