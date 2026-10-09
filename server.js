@@ -572,12 +572,13 @@ process.on('unhandledRejection', (reason) => {
   console.error('[SERVER ERROR] Unhandled rejection:', reason);
 });
 
-let appJsCache = null;
+const appJsCache = new Map();
 
 function getPreparedAppJs(filePath) {
   const stat = fs.statSync(filePath);
-  if (appJsCache && appJsCache.mtime === stat.mtimeMs) {
-    return appJsCache;
+  let cached = appJsCache.get(filePath);
+  if (cached && cached.mtime === stat.mtimeMs) {
+    return cached;
   }
   let jsContent = fs.readFileSync(filePath, 'utf8');
   jsContent = jsContent.replace(/https:\/\/unpkg\.com\//g, '/unpkg.com/');
@@ -585,12 +586,13 @@ function getPreparedAppJs(filePath) {
   jsContent = jsContent.replace(/https:\/\/cdn\.usefathom\.com\//g, '/cdn.usefathom.com/');
   jsContent = jsContent.replace(/https:\/\/wondermake\.xyz\//g, '/');
   const compressed = zlib.gzipSync(Buffer.from(jsContent, 'utf8'));
-  appJsCache = {
+  cached = {
     mtime: stat.mtimeMs,
     content: jsContent,
     compressed: compressed
   };
-  return appJsCache;
+  appJsCache.set(filePath, cached);
+  return cached;
 }
 
 const server = http.createServer((req, res) => {
@@ -863,7 +865,7 @@ const server = http.createServer((req, res) => {
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
     // Intercept main app JS to route unpkg & fathom locally with high-performance memoization
-    if (path.basename(localFilePath).startsWith('index-') && ext === '.js') {
+    if (path.basename(localFilePath) === 'index-451442ce.js') {
       try {
         const prepared = getPreparedAppJs(localFilePath);
         const cacheControl = getCacheControl(localFilePath);
