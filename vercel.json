@@ -3,6 +3,10 @@
   "cleanUrls": true,
   "rewrites": [
     {
+      "source": "/_next/image",
+      "destination": "/api/image.js"
+    },
+    {
       "source": "/api/inquiry",
       "destination": "/api/inquiry.js"
     },
