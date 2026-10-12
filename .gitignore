@@ -1,0 +1,7 @@
+# Private customer inquiries and environment variables
+inquiries.json
+.env
+.env*.local
+*.log
+.DS_Store
+Thumbs.db
