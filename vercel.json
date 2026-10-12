@@ -1,53 +1,22 @@
 {
   "version": 2,
+  "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/pfps/(.*)",
-      "destination": "/editorartem.com/pfps/$1"
-    },
-    {
       "source": "/api/inquiry",
-      "destination": "/api/inquiry"
+      "destination": "/api/inquiry.js"
     },
     {
       "source": "/__forms.html",
-      "destination": "/api/inquiry"
-    },
-    {
-      "source": "/_next/(.*)",
-      "destination": "/editorartem.com/_next/$1"
-    },
-    {
-      "source": "/hourglass.webp",
-      "destination": "/editorartem.com/hourglass.webp"
+      "destination": "/api/inquiry.js"
     },
     {
       "source": "/privacy-policy",
-      "destination": "/editorartem.com/privacy-policy.html"
+      "destination": "/privacy-policy.html"
     },
     {
       "source": "/portfolio",
-      "destination": "/editorartem.com/portfolio.html"
-    },
-    {
-      "source": "/videos.ctfassets.net/(.*)",
-      "destination": "/videos.ctfassets.net/$1"
-    },
-    {
-      "source": "/yt3.ggpht.com/(.*)",
-      "destination": "/yt3.ggpht.com/$1"
-    },
-    {
-      "source": "/www.youtube.com/(.*)",
-      "destination": "/www.youtube.com/$1"
-    },
-    {
-      "source": "/",
-      "destination": "/editorartem.com/index.html"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/editorartem.com/$1"
+      "destination": "/portfolio.html"
     }
   ]
 }
