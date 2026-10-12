@@ -219,18 +219,34 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // Handle _next/image query
+  // Handle _next/image query (Serve local /pfps/ or pipe external without redirect)
   if (pathname === '/_next/image') {
     const q = new URLSearchParams(parsedUrl.query || '');
-    const qUrl = q.get('url');
+    const qUrl = q.get('url') || '';
     if (qUrl) {
-      if (qUrl.startsWith('http://') || qUrl.startsWith('https://')) {
-        res.writeHead(302, { 'Location': qUrl });
-        return res.end();
+      const cleanTarget = qUrl.replace(/^\/+/, '');
+      const localInSite = path.join(SITE_DIR, cleanTarget);
+      if (fs.existsSync(localInSite) && fs.statSync(localInSite).isFile()) {
+        return serveFile(req, res, localInSite);
       }
-      const localTarget = path.join(SITE_DIR, qUrl.replace(/^\/+/, ''));
-      if (fs.existsSync(localTarget) && fs.statSync(localTarget).isFile()) {
-        return serveFile(req, res, localTarget);
+      const localInBase = path.join(BASE_DIR, cleanTarget);
+      if (fs.existsSync(localInBase) && fs.statSync(localInBase).isFile()) {
+        return serveFile(req, res, localInBase);
+      }
+
+      if (qUrl.startsWith('http://') || qUrl.startsWith('https://')) {
+        const client = qUrl.startsWith('https://') ? https : http;
+        return client.get(qUrl, (proxyRes) => {
+          res.writeHead(proxyRes.statusCode, {
+            'Content-Type': proxyRes.headers['content-type'] || 'image/jpeg',
+            'Cache-Control': 'public, max-age=31536000, immutable',
+            'Access-Control-Allow-Origin': '*'
+          });
+          proxyRes.pipe(res);
+        }).on('error', () => {
+          res.writeHead(404);
+          res.end();
+        });
       }
     }
     res.writeHead(204);

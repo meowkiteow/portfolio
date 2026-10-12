@@ -2,6 +2,10 @@
   "version": 2,
   "rewrites": [
     {
+      "source": "/pfps/(.*)",
+      "destination": "/editorartem.com/pfps/$1"
+    },
+    {
       "source": "/api/inquiry",
       "destination": "/api/inquiry"
     },
