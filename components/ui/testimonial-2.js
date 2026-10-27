@@ -8,16 +8,16 @@ init_npm_react_18_2();
 init_jsx_runtime();
 
 // Browser-ready equivalent of testimonial-2.tsx for the existing Framer export.
-export function Testimonial2({ authorName, authorTagline, url, quote, className }) {
+export function Testimonial2({ authorName, authorTagline, url, quote, className, isQuote = true }) {
   return jsx("figure", {
     className: ["testimonial-2", className].filter(Boolean).join(" "),
     children: [
-      jsx("blockquote", {
+      jsx(isQuote ? "blockquote" : "div", {
         className: "testimonial-2-quote",
         children: [
-          jsx("span", { className: "testimonial-2-opening", "aria-hidden": true, children: "\u201c" }),
+          isQuote && jsx("span", { className: "testimonial-2-opening", "aria-hidden": true, children: "\u201c" }),
           jsx("p", { children: quote }),
-          jsx("span", { className: "testimonial-2-closing", "aria-hidden": true, children: "\u201d" }),
+          isQuote && jsx("span", { className: "testimonial-2-closing", "aria-hidden": true, children: "\u201d" }),
         ],
       }),
       jsx("figcaption", {
