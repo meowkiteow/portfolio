@@ -1,0 +1,222 @@
+/* Let the longer skill labels wrap naturally at every breakpoint. */
+.framer-nGnjG .framer-r956q5,
+.framer-nGnjG .framer-1eiul0i {
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  overflow: visible;
+}
+
+.framer-nGnjG .framer-19buklq [class$="-container"] {
+  max-width: 100%;
+}
+
+/* Remove the template menu button and its dropdown at every breakpoint. */
+nav.framer-X5HQe .framer-10s8023-container,
+nav.framer-X5HQe .framer-e2151t {
+  display: none !important;
+}
+
+nav.framer-X5HQe {
+  height: auto !important;
+  min-height: 0 !important;
+  pointer-events: none;
+}
+
+nav.framer-X5HQe .framer-y0mo0b-container {
+  pointer-events: auto;
+}
+
+/* Keep locally saved client images circular with a clean edge. */
+.framer-1qku9hp .framer-1jnzaqk:has(img[src^="/assets/experience/"]) {
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  clip-path: circle(50%);
+  box-shadow: none !important;
+  isolation: isolate;
+}
+
+.framer-1qku9hp .framer-1jnzaqk:has(img[src^="/assets/experience/"])::after {
+  display: none !important;
+}
+
+.framer-1qku9hp img[src^="/assets/experience/"] {
+  border-radius: 50% !important;
+  image-rendering: auto !important;
+  object-fit: cover;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.hero-client {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  font-family: Inter, Arial, sans-serif;
+}
+
+.hero-client-heading {
+  margin: 0;
+  color: #777;
+  font-size: 14px;
+  line-height: 1.75;
+  letter-spacing: -.04em;
+}
+
+.hero-client-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #313336;
+  font-size: 12px;
+  line-height: 1.4;
+  min-width: 0;
+  text-align: center;
+}
+
+.hero-client-profiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  justify-content: center;
+  gap: 24px 28px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.hero-client-profile img {
+  display: block;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  clip-path: circle(50%);
+  object-fit: cover;
+  image-rendering: auto;
+}
+
+/* Keep the original interleaved composition in normal text flow. */
+#hero .hero-inline-headline,
+#hero .hero-inline-headline .framer-5ivilb {
+  max-width: 860px;
+  width: 100%;
+  white-space: normal;
+}
+
+#hero .hero-inline-title {
+  margin: 0;
+  white-space: normal;
+  text-wrap: balance;
+  text-align: center;
+  font-family: Fraunces, Georgia, serif;
+  font-size: clamp(28px, 4.2vw, 48px);
+  font-weight: 300;
+  line-height: 1.32;
+  letter-spacing: -.065em;
+}
+
+.hero-inline-name { white-space: nowrap; }
+
+.hero-inline-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  vertical-align: -.16em;
+  border: 2px solid #efefef;
+  border-radius: .27em;
+  background: #fff;
+  box-shadow: 0 2px 3px #0002, 0 8px 12px -5px #0004;
+}
+
+.hero-inline-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-inline-icon--portrait { transform: rotate(4deg); }
+.hero-inline-icon--audio { transform: rotate(-3deg); }
+.hero-inline-icon--blue { transform: rotate(-4deg); }
+.hero-inline-icon--green { transform: rotate(3deg); }
+
+.hero-inline-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: .2em;
+  margin-inline: .08em;
+  vertical-align: -.16em;
+  white-space: nowrap;
+}
+
+@media (max-width: 599.98px) {
+  #hero .hero-inline-title { line-height: 1.42; letter-spacing: -.055em; }
+  .hero-inline-tools { gap: .16em; }
+  .hero-client-profiles { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 320px; }
+}
+
+.contact-actions {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  font-family: Inter, Arial, sans-serif;
+}
+
+.contact-actions-buttons { display: flex; justify-content: center; align-items: stretch; flex-wrap: wrap; gap: 12px; width: 100%; }
+.contact-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  max-width: 100%;
+  padding: 13px 19px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: -.025em;
+  transition: background-color .18s ease, box-shadow .18s ease;
+}
+.contact-button svg { flex: none; }
+.contact-button--whatsapp {
+  color: #fff;
+  border-color: #ff683c;
+  background: linear-gradient(180deg, #ff693b, #ff4e25 70%, #ff8a62);
+  box-shadow: inset 0 1px 1px #ffffff80, inset 0 -3px 5px #ffffff40, 0 5px 16px #ff5b2626;
+}
+.contact-button--whatsapp:hover { background: linear-gradient(180deg, #ff764c, #f4471e 70%, #ff8056); box-shadow: inset 0 1px 1px #ffffff80, 0 6px 18px #ff5b2640; }
+.contact-button--email { color: #272727; background: #fff; border-color: #dedede; box-shadow: 0 2px 5px #00000005; }
+.contact-button--email:hover { background: #f5f5f5; border-color: #bcbcbc; }
+.contact-email-address { max-width: 100%; color: #737373; font-size: 12px; line-height: 1.6; text-decoration: none; overflow-wrap: anywhere; user-select: text; }
+.contact-email-address:hover { color: #333; text-decoration: underline; text-underline-offset: 3px; }
+.contact-button:focus-visible, .contact-email-address:focus-visible { outline: 2px solid #ff683c; outline-offset: 5px; }
+.contact-actions--footer .contact-button--email { color: #fff; border-color: #ffffff55; background: #ffffff0d; }
+.contact-actions--footer .contact-button--email:hover { background: #ffffff1a; border-color: #ffffff99; }
+.contact-actions--footer .contact-email-address { color: #c9c9c9; }
+.contact-actions--footer .contact-email-address:hover { color: #fff; }
+#hero .framer-3l49gq-container { width: 100% !important; max-width: 680px; height: auto !important; }
+.framer-dkMrB .framer-hfj1wy { gap: 36px !important; }
+
+@media (max-width: 599.98px) {
+  .contact-actions-buttons { flex-direction: column; }
+  .contact-actions--hero { max-width: 380px; margin-inline: auto; }
+  .contact-button { width: 100%; padding-inline: 14px; font-size: 13px; }
+  .contact-actions--footer { max-width: 380px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-button { transition: none; }
+}
+

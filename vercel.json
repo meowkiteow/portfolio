@@ -1,26 +1,8 @@
 {
-  "version": 2,
-  "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/_next/image",
-      "destination": "/api/image.js"
-    },
-    {
-      "source": "/api/inquiry",
-      "destination": "/api/inquiry.js"
-    },
-    {
-      "source": "/__forms.html",
-      "destination": "/api/inquiry.js"
-    },
-    {
-      "source": "/privacy-policy",
-      "destination": "/privacy-policy.html"
-    },
-    {
-      "source": "/portfolio",
-      "destination": "/portfolio.html"
-    }
-  ]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "",
+  "cleanUrls": true
 }

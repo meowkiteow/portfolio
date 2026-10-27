@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Guillermo Rauch",
+    "role": "CEO of Enigma",
+    "quote": "Hypersphere has been a game-changer for us. Their service is top-notch and their team is incredibly responsive.",
+    "theme": "grid",
+    "large": true
+  },
+  {
+    "name": "Rika Shinoda",
+    "role": "CEO of Kintsugi",
+    "quote": "We've seen incredible results with Hypersphere. Their expertise, dedication.",
+    "theme": "blue"
+  },
+  {
+    "name": "Reacher",
+    "role": "CEO of OdeaoLabs",
+    "quote": "Their team is highly professional, and their innovative solutions have truly transformed the way we operate.",
+    "theme": "dark"
+  },
+  {
+    "name": "John",
+    "role": "CEO of Labsbo",
+    "quote": "We're extremely satisfied with Hypersphere. Their expertise and dedication have exceeded our expectations.",
+    "theme": "dark"
+  },
+  {
+    "name": "Steven Sunny",
+    "role": "CEO of boxefi",
+    "quote": "Their customer support is absolutely exceptional. They are always available, incredibly helpful.",
+    "theme": "dark"
+  },
+  {
+    "name": "Guillermo Rauch",
+    "role": "CEO of OdeaoLabs",
+    "quote": "Hypersphere has been a key partner in our growth journey.",
+    "theme": "blue"
+  },
+  {
+    "name": "Paul Brauch",
+    "role": "CTO of Spectrum",
+    "quote": "Hypersphere has been a true game-changer for us. Their exceptional service, combined with their deep expertise and commitment to excellence, has made a significant impact on our business.",
+    "theme": "grid",
+    "large": true
+  }
+]

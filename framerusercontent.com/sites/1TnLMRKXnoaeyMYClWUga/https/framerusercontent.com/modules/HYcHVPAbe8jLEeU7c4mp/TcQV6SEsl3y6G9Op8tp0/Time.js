@@ -1,0 +1,24 @@
+import{jsx as _jsx}from"react/jsx-runtime";import{addPropertyControls,ControlType,RenderTarget,useLocaleCode}from"framer";import{useState,useEffect,useCallback}from"react";const fontStack=`"Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"`;function useForceRender(){const[_,set]=useState(0);return useCallback(()=>set(v=>v+1),[]);}function formatTimeOrDate(outputType,{showYear,showMonth,showWeekday,showMinutes,showSeconds},timeFormat,monthFormat,localCode){const date=new Date;const onlyYearIsShown=!showWeekday&&!showMonth&&showYear;switch(outputType){case"date":return new Intl.DateTimeFormat(localCode,{weekday:showWeekday?"long":undefined,day:onlyYearIsShown?undefined:"numeric",month:showMonth?monthFormat:undefined,year:showYear?"numeric":undefined}).format(date);case"time":return new Intl.DateTimeFormat(localCode,{hour:"numeric",minute:showMinutes?"numeric":undefined,second:showSeconds&&showMinutes?"numeric":undefined,hour12:timeFormat==="12h"}).format(date);default:return new Intl.DateTimeFormat(localCode).format(date);}}/**
+ * TIME AND DATE
+ * FORKED FROM PROTOTYPING
+ *
+ *
+ * @framerIntrinsicWidth 140
+ * @framerIntrinsicHeight 20
+ *
+ * @framerDisableUnlink
+ *
+ * @framerSupportedLayoutWidth any
+ * @framerSupportedLayoutHeight any
+ */export function Time(props){const{outputType,fontFamily,fontSize,fontWeight,timeFormat,showYear,showMonth,showWeekday,showHours,showMinutes,showSeconds,monthFormat,color,font,tabularFont,alignment}=props;const[visible,setIsVisible]=useState(false);const isCanvas=RenderTarget.current()===RenderTarget.canvas;const render=useForceRender();const localCode=useLocaleCode();const textContent=formatTimeOrDate(outputType,{showYear,showMonth,showWeekday,showHours,showMinutes,showSeconds},timeFormat,monthFormat,localCode);useEffect(()=>{setIsVisible(true);// Don’t want real time on Canvas
+if(isCanvas)return;const int=setInterval(()=>{render();});return()=>{clearInterval(int);};},[]);return /*#__PURE__*/_jsx("p",{suppressHydrationWarning:true,style:{margin:0,padding:0,color,fontFamily:fontStack,fontWeight:500,fontSize:16,lineHeight:1,visibility:visible?"visible":"hidden",...font,fontVariantNumeric:tabularFont?"tabular-nums":"normal",whiteSpace:"nowrap"},children:textContent});}Time.defaultProps={height:20,width:140,outputType:"time",color:"#999",timeFormat:"24h",showYear:true,showMonth:true,showWeekday:true,showMinutes:true,showSeconds:true,monthFormat:"long",alignment:"center"};Time.displayName="Time & Date";addPropertyControls(Time,{outputType:{title:"Type",type:ControlType.Enum,displaySegmentedControl:true,options:["date","time"],optionTitles:["Date","Time"],defaultValue:Time.defaultProps.outputType},showWeekday:{title:"Day",type:ControlType.Boolean,enabledTitle:"Show",disabledTitle:"Hide",defaultValue:Time.defaultProps.showWeekday,hidden:props=>props.outputType!=="date"},showMonth:{title:"Month",type:ControlType.Boolean,enabledTitle:"Show",disabledTitle:"Hide",defaultValue:Time.defaultProps.showMonth,hidden:props=>props.outputType!=="date"},monthFormat:{title:"Format",type:ControlType.Enum,options:["short","long","numeric"],optionTitles:["Short","Long","Numeric"],defaultValue:Time.defaultProps.monthFormat,hidden:props=>props.outputType!=="date"||!props.showMonth},showYear:{title:"Year",type:ControlType.Boolean,enabledTitle:"Show",disabledTitle:"Hide",defaultValue:Time.defaultProps.showYear,hidden:props=>props.outputType!=="date"},timeFormat:{title:"Format",type:ControlType.Enum,options:["12h","24h"],optionTitles:["12h","24h"],displaySegmentedControl:true,defaultValue:Time.defaultProps.timeFormat,hidden:props=>props.outputType!=="time"},// showHours: {
+//     title: "Hours",
+//     type: ControlType.Boolean,
+//     enabledTitle: "Show",
+//     disabledTitle: "Hide",
+//     defaultValue: Time.defaultProps.showHours,
+//     hidden: (props) => props.outputType !== "time",
+// },
+showMinutes:{title:"Minutes",type:ControlType.Boolean,enabledTitle:"Show",disabledTitle:"Hide",defaultValue:Time.defaultProps.showMinutes,hidden:props=>props.outputType!=="time"},showSeconds:{title:"Seconds",type:ControlType.Boolean,enabledTitle:"Show",disabledTitle:"Hide",defaultValue:Time.defaultProps.showSeconds,hidden:props=>props.outputType!=="time"||!props.showMinutes},font:{type:ControlType.Font,controls:"extended"},tabularFont:{title:"Tabular",type:ControlType.Boolean,defaultValue:true},color:{type:ControlType.Color,defaultValue:Time.defaultProps.color}});
+export const __FramerMetadata__ = {"exports":{"Time":{"type":"reactComponent","name":"Time","slots":[],"annotations":{"framerIntrinsicHeight":"20","framerContractVersion":"1","framerSupportedLayoutWidth":"any","framerSupportedLayoutHeight":"any","framerDisableUnlink":"*","framerIntrinsicWidth":"140"}},"__FramerMetadata__":{"type":"variable"}}}
+//# sourceMappingURL=./Time.map

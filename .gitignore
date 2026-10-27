@@ -1,7 +1,15 @@
-# Private customer inquiries and environment variables
-inquiries.json
+# Local dependencies and configuration
+node_modules/
+/dist/
+/.vercel/
 .env
-.env*.local
+.env.*
+!.env.example
 *.log
-.DS_Store
 Thumbs.db
+.DS_Store
+
+# Unused source copies; the site serves its active videos from
+# framerusercontent.com/assets/ and assets/projects/.
+/assets/jayzee-videos/
+/test_video.mp4

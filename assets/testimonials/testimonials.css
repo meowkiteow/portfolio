@@ -1,0 +1,73 @@
+#projects .framer-pn4uvc {
+  max-width: 1120px !important;
+  padding: clamp(56px, 6vw, 88px) 32px !important;
+}
+
+#projects .framer-10ib64p-container {
+  width: 100% !important;
+  max-width: 640px !important;
+  height: auto !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.compact-testimonial {
+  width: 100%;
+  min-width: 0;
+  color: #171717;
+}
+
+.testimonial-2 {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  margin: 0;
+  padding-left: 12px;
+}
+
+.testimonial-2-quote {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin: 0;
+  font-family: Fraunces, Georgia, serif;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.55;
+  letter-spacing: -.025em;
+}
+
+.testimonial-2-quote p { display: inline; margin: 0; text-wrap: pretty; }
+.testimonial-2-opening { position: absolute; left: -12px; color: #858585; user-select: none; }
+.testimonial-2-closing { position: absolute; transform: translateX(2px); color: #858585; user-select: none; }
+
+.testimonial-2-caption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 70%;
+  margin-left: auto;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.testimonial-2-rule { flex: 1; min-width: 24px; height: 1px; background: #d8d8d8; transform: translateY(1px); }
+.testimonial-2-author { margin-left: auto; text-align: right; }
+.testimonial-2-author a { color: inherit; text-decoration: none; }
+.testimonial-2-author a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.testimonial-2-author a:focus-visible { outline: 2px solid #171717; outline-offset: 4px; }
+.testimonial-2-tagline { color: #737373; font-weight: 400; }
+.testimonial-2-comma { color: #171717; }
+
+@media (max-width: 767px) {
+  #projects .framer-pn4uvc { padding: 48px 24px !important; }
+  .testimonial-2-quote { font-size: 20px; line-height: 1.55; }
+  .testimonial-2-caption { width: 100%; margin-left: 0; }
+  .testimonial-2-rule, .testimonial-2-comma { display: none; }
+  .testimonial-2-author { margin-left: 0; text-align: left; }
+  .testimonial-2-tagline { display: block; margin-top: 4px; }
+}
