@@ -220,3 +220,38 @@ nav.framer-X5HQe .framer-y0mo0b-container {
   .contact-button { transition: none; }
 }
 
+.software-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  min-height: 79px;
+  padding: 16px;
+  border: 1px dashed rgba(49, 51, 54, .3);
+  border-radius: 12px;
+  background: #fff;
+  color: #313336;
+  font-family: Inter, Arial, sans-serif;
+  cursor: default;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background-color .22s ease;
+}
+.software-card-icon { display: block; flex: none; width: 40px; height: 40px; border-radius: 10px; object-fit: contain; }
+.software-card-copy { min-width: 0; }
+.software-card-title { margin: 0; font-size: 16px; font-weight: 400; line-height: 1.45; letter-spacing: -.04em; }
+.software-card-category { margin: 4px 0 0; color: rgba(49, 51, 54, .6); font-size: 13px; line-height: 1.45; letter-spacing: -.025em; }
+
+@media (hover: hover) and (pointer: fine) {
+  .software-card:hover {
+    transform: translateY(-4px);
+    border-color: #ff8058;
+    background: #fffaf7;
+    box-shadow: 0 8px 22px rgba(49, 51, 54, .09);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .software-card { transition: none; }
+  .software-card:hover { transform: none; }
+}
+
