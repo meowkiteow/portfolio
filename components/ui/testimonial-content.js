@@ -4,24 +4,24 @@ export const collaborations = [
     "name": "Umar Punjabi",
     "focus": "Trading & creator education",
     "image": "/assets/experience/umar-punjabi.jpg",
-    "summary": "I shape trading lessons into clear, well-paced stories, giving the ideas room to land while keeping the edit sharp and engaging."
+    "summary": "Trading lessons need a clear thread. I shape the edit around the idea, tighten the pacing, and leave room for the explanation to land."
   },
   {
     "name": "Royal Wharf Clinic",
     "focus": "Clinic & patient education",
     "image": "/assets/experience/royal-wharf-clinic.jpg",
-    "summary": "For educational content, clarity comes first. I keep the expert's voice at the centre and use purposeful cuts to make detailed explanations easier to follow."
+    "summary": "Medical explanations need care as well as clarity. I keep the expert's voice at the centre and use the edit to make each step easier to follow."
   },
   {
     "name": "The Numbers Game",
     "focus": "Business interviews",
     "image": "/assets/experience/the-numbers-game.jpg",
-    "summary": "Long conversations need a strong opening. I focus on the story, the rhythm and the moments that make a business journey worth watching."
+    "summary": "A long interview needs more than shorter answers. I look for the moments that reveal the story, then shape the opening and rhythm around them."
   },
   {
     "name": "Wiz of Ecom",
     "focus": "Ecommerce & personal brand",
     "image": "/assets/experience/wiz-of-ecom.jpg",
-    "summary": "Direct, personality-led editing for ecommerce content, with clean pacing and a strong focus on the message behind the video."
+    "summary": "The personality is part of the message. I keep the delivery direct and the pacing sharp, while letting the creator sound like themselves."
   }
 ];

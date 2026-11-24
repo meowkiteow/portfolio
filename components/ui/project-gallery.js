@@ -15,7 +15,7 @@ init_jsx_runtime();
 export const projectCategories = [
   {
     id: "minimal",
-    title: "Minimal",
+    title: "Brand & product edits",
     videos: [
       ["jayzee_metaman_ad.mp4", "Perfume brand edit"],
       ["jayzee_kl_rahul_1.mp4", "Skincare product edit"],
@@ -25,7 +25,7 @@ export const projectCategories = [
   },
   {
     id: "talking-head",
-    title: "Talking Head",
+    title: "Talking-head edits",
     videos: [
       ["jayzee_short_minimal_1.mp4", "Creator storytelling edit"],
       ["jayzee_short_minimal_2.mp4", "Creator social media edit"],
@@ -33,7 +33,7 @@ export const projectCategories = [
   },
   {
     id: "long-form",
-    title: "Long Form",
+    title: "Long-form YouTube",
     landscape: true,
     videos: [["jayzee_vsl_edit.mp4", "Long form editing excerpt"]],
     youtubeProjects: longFormProjects,
@@ -79,7 +79,7 @@ export default function ProjectGallery() {
       jsx("header", {
         className: "project-gallery-header",
         children: [
-          jsx("h2", { children: "Featured Projects" }),
+          jsx("h2", { children: "Selected edits. Press play." }),
           jsx("div", {
             className: "project-layout-switch",
             "aria-label": "Video layout",

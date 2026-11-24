@@ -27,6 +27,31 @@ nav.framer-X5HQe .framer-y0mo0b-container {
 }
 
 /* Keep locally saved client images circular with a clean edge. */
+.framer-nGnjG .framer-1qku9hp {
+  isolation: isolate;
+}
+
+/* Reuse the former testimonial LED matrix behind the experience list. */
+.framer-nGnjG .framer-1qku9hp > .framer-1yimtj1-container {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .7;
+  -webkit-mask: radial-gradient(ellipse at center, #000 20%, transparent 85%);
+  mask: radial-gradient(ellipse at center, #000 20%, transparent 85%);
+}
+
+.framer-nGnjG .framer-1qku9hp > :not(.framer-1yimtj1-container) {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .framer-nGnjG .framer-1qku9hp > .framer-1yimtj1-container { display: none; }
+}
+
 .framer-1qku9hp .framer-1jnzaqk:has(img[src^="/assets/experience/"]) {
   border-radius: 50% !important;
   overflow: hidden !important;
@@ -96,7 +121,29 @@ nav.framer-X5HQe .framer-y0mo0b-container {
   image-rendering: auto;
 }
 
-/* Keep the original interleaved composition in normal text flow. */
+/* Keep the hook and its supporting copy readable at every breakpoint. */
+.hero-eyebrow {
+  margin: 0 0 20px;
+  color: #686868;
+  font: 500 12px/1.6 Inter, Arial, sans-serif;
+  text-align: center;
+  letter-spacing: .06em;
+}
+.hero-description {
+  max-width: 610px;
+  margin: 22px auto 0;
+  color: #626262;
+  font: 400 16px/1.65 Inter, Arial, sans-serif;
+  text-align: center;
+  text-wrap: pretty;
+}
+.contact-context {
+  max-width: 480px;
+  color: #ddd;
+  font: 400 14px/1.6 Inter, Arial, sans-serif;
+  text-align: center;
+}
+#projects { scroll-margin-top: 80px; }
 #hero .hero-inline-headline,
 #hero .hero-inline-headline .framer-5ivilb {
   max-width: 860px;
@@ -110,13 +157,20 @@ nav.framer-X5HQe .framer-y0mo0b-container {
   text-wrap: balance;
   text-align: center;
   font-family: Fraunces, Georgia, serif;
-  font-size: clamp(28px, 4.2vw, 48px);
+  font-size: clamp(34px, 5.2vw, 58px);
   font-weight: 300;
   line-height: 1.32;
   letter-spacing: -.065em;
 }
 
 .hero-inline-name { white-space: nowrap; }
+
+#hero .hero-title-setup,
+#hero .hero-title-payoff { display: block; }
+#hero .hero-title-payoff {
+  color: #313336;
+  font-style: normal;
+}
 
 .hero-inline-icon {
   display: inline-block;
@@ -152,7 +206,8 @@ nav.framer-X5HQe .framer-y0mo0b-container {
 }
 
 @media (max-width: 599.98px) {
-  #hero .hero-inline-title { line-height: 1.42; letter-spacing: -.055em; }
+  #hero .hero-inline-title { line-height: 1.2; letter-spacing: -.055em; }
+  .hero-description { font-size: 15px; }
   .hero-inline-tools { gap: .16em; }
   .hero-client-profiles { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 320px; }
 }
@@ -218,6 +273,15 @@ nav.framer-X5HQe .framer-y0mo0b-container {
 
 @media (prefers-reduced-motion: reduce) {
   .contact-button { transition: none; }
+}
+
+.framer-nGnjG .framer-vu2acz {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.framer-nGnjG .framer-vu2acz [class$="-container"] { width: 100%; }
+@media (max-width: 599.98px) {
+  .framer-nGnjG .framer-vu2acz { grid-template-columns: minmax(0, 1fr); }
 }
 
 .software-card {

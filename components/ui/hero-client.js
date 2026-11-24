@@ -27,7 +27,7 @@ export default function HeroClient() {
   return createElement("div", {
     className: "hero-client",
     children: [
-      createElement("p", { className: "hero-client-heading", children: "Trusted by the best" }),
+      createElement("p", { className: "hero-client-heading", children: "Selected creators and brands I have edited for" }),
       createElement("div", {
         className: "hero-client-profiles",
         children: [

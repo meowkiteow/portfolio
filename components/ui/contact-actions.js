@@ -32,14 +32,16 @@ export default function ContactActions({ placement = "hero" }) {
       jsx("div", { className: "contact-actions-buttons", children: [
         jsx("a", {
           className: "contact-button contact-button--whatsapp",
-          href: contactWhatsApp, target: "_blank", rel: "noopener noreferrer",
-          children: [contactIcon("whatsapp"), jsx("span", { children: "Discuss your project on WhatsApp" })],
+          href: placement === "hero" ? "#projects" : contactWhatsApp,
+          target: placement === "hero" ? undefined : "_blank", rel: "noopener noreferrer",
+          children: [placement === "hero" ? jsx("span", { "aria-hidden": true, children: "↓" }) : contactIcon("whatsapp"), jsx("span", { children: placement === "hero" ? "See selected edits" : "Chat on WhatsApp" })],
         }),
         jsx("a", {
           className: "contact-button contact-button--email", href: contactMailto,
-          children: [contactIcon("email"), jsx("span", { children: "Email me" })],
+          children: [contactIcon("email"), jsx("span", { children: placement === "hero" ? "Let's work together" : "Email me" })],
         }),
       ] }),
+      placement === "footer" && jsx("p", { className: "contact-context", children: "Hiring for your team or planning a project? Tell me what you need, the style you have in mind, and your timeline." }),
       jsx("a", { className: "contact-email-address", href: contactMailto, children: contactEmail }),
     ],
   });

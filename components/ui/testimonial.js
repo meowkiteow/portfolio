@@ -11,9 +11,9 @@ export default function ClientFeedback() {
   const [selected, setSelected] = useState(0);
   const client = collaborations[selected];
   return jsx("section", {
-    id: "testimonials", className: "compact-testimonial", "aria-label": "Selected collaborations",
+    id: "testimonials", className: "compact-testimonial", "aria-label": "The thinking behind the edits",
     children: [
-      jsx("p", { className: "collaboration-heading", children: "Selected collaborations" }),
+      jsx("p", { className: "collaboration-heading", children: "The thinking behind the edits" }),
       jsx("div", {
         className: "collaboration-story", "aria-live": "polite", "aria-atomic": true,
         children: jsx(Testimonial2, {
